@@ -127,6 +127,7 @@ Consider a \textit{training set} (data set which we'll use to fit parameters of 
 Our job is to learn from this data how to predict prices of houses as a function of their size. This is a supervised learning problem, because our training set contains the right answers: for every input (house size), we know the right output (house price). Moreover, this is a regression problem, because the output variable (house price) is continuous. Figure \ref{linreg-bigpic} shows the picture of how we will tackle this problem: given the training set, our learning algorithm will spits out a function $h$, called the \textit{hypothesis} function, which can estimate the price of a house given its size.
 
 \begin{figure}[ht]
+\centering
 \includegraphics[scale=0.8]{images/lin_reg/big-picture.jpg}
 \caption{Big picture.}
 \label{linreg-bigpic}
@@ -163,7 +164,7 @@ Given $\theta_0$ and $\theta_1$, it computes the sum of (squared) prediction err
 \begin{figure}[ht]
 \centering
 \includegraphics[scale=0.7]{images/lin_reg/costfunc.pdf}
-\caption{Correspondence between minimizing the cost function and getting a better fit to data. The following model is used to fit the data: $h_{\theta}(x) = \theta_1 x$. Black dots on the left show the training set. The right figure shows the cost function $J(\theta_1)$. Every dot on the right figure corresponds to a line of the same color on the left figure. We see that the closer $\theta_1$ is to $J$'s minimum, the better the fit to data is.}
+\caption{Correspondence between minimizing the cost function and getting a better fit to data. The following model is used to fit the data: $h_{\theta}(x) = \theta_1 x$. Black dots on the left show the training set. The right figure shows the cost function $J(\theta_1)$. Every dot on the right figure corresponds to a line of the same color on the left figure. We see that the closer $\theta_1$ is to $J$'s minimum, the better the fit to data is. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_reg/costfunction.ipynb}{here}.}
 \label{linreg-fig:costfunc}
 \end{figure}
 
@@ -346,6 +347,36 @@ So there we have it. Given the training set in the form of the design matrix $X$
 
 
 \subsection{Polynomial regression}
-What if our data is better modeled as a polynomial? For instance, we might think that house prices
+What if our data is better modeled as a polynomial? For instance, fitting a linear model to data shown in Figure \ref{linreg-fig:poly-data} doesn't seem appropriate. As it turns out, the following model provides a much better representation:
+\begin{equation}
+h_\theta(x) = \theta_0 + \theta_1 x + \theta_2 x^2 + \theta_3 x^3
+\label{linreg-eq:poly-example}
+\end{equation}
+Can we use the machinery of linear regression to estimate the coefficients $\theta_0\dots\theta_3$? Consider the following definitions:
+\begin{equation}
+    x_1 = x, \qquad x_2 = x^2, \qquad x_3 = x^3.
+\end{equation}
+using which \eqref{linreg-eq:poly-example} takes the form \eqref{linreg-eq:multi-hypothesis}, or equivalently \eqref{linreg-eq:multi-hypothesis-mat} where the feature vector is given by
+\begin{equation}
+    x=
+    \begin{pmatrix}
+        1 \\
+        x \\
+        x^2 \\
+        x^3
+    \end{pmatrix}.
+\end{equation}
+By transforming non-linear terms into new features, we can carry out linear regression as prescribed in the previous section. This trick can be used for far more complicated models, such as
+\begin{equation}
+    h_{\theta}(x) = \theta_0 + \theta_1 x^2 e^{-2x} + \theta_2 \sqrt{x}.
+\end{equation}
+Given that we can treat such complicated functions, what's with the word \textit{linear} in linear regression? It refers to the parameters $\theta$ and not the features. An example of a model that cannot be treated with linear regression is $h_{\theta}(x) = e^{-\theta x}$, because it's not a linear function of $\theta$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.7]{images/lin_reg/poly-data.pdf}
+\caption{Non-linear relationship between house price and size. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_reg/poly.ipynb}{\color{blue} here}}.
+\label{linreg-fig:poly-data}
+\end{figure}
 
 \end{document}
