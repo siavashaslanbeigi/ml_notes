@@ -3,8 +3,18 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsthm}
 \usepackage{makecell,tabularx}
 \usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
 \hypersetup{colorlinks,urlcolor=blue}
 %% or
 % \hypersetup{colorlinks=false,pdfborder=000}
@@ -345,6 +355,19 @@ This is called the \textit{normal} equation. You should check for yourself that 
 
 So there we have it. Given the training set in the form of the design matrix $X$ and the target vector $Y$, we can estimate $\theta$ via \eqref{linreg-eq:normal} and then use \eqref{linreg-eq:multi-hypothesis-mat} to make predictions for new examples.
 
+\subsection{When the normal equation fails}
+The normal equation \eqref{linreg-eq:normal} can only work if $X^TX$ is invertible. Let's look at scenarios where this is not the case, and understand the reasons intuitively and mathematically. Consider the following design matrix, constructed using the first two examples in table \ref{linreg-tab:houseprice}:
+\begin{equation}
+    X =
+    \begin{pmatrix}
+        1 & 2104 & 5 & 1 & 45 \\
+        1 & 1416 & 3 & 2 & 40 \\
+    \end{pmatrix}.
+\end{equation}
+It can be checked that $\text{det}(X^TX)=0$. Therefore, $X^TX$ is not invertible. Is there something special about this data set? As it turns out, this result holds no matter how we tweak the numbers. This may seem a bit surprising. However, let's consider what it would've meant if $X^TX$ was invertible. The dataset contains five features (including $x_0$), so the normal equation will solve for five parameters $\theta_0,\theta_1\dots\theta_4$, but using only two examples. In short, there are two equations and five unknowns. There's not enough data to fix the parameters of the model, which manifests itself through the non-invertibility of $X^TX$.
+
+More generally, we should expect that $X^TX$ is not invertible when $m<n+1$, i.e. when there are fewer examples than features.
+
 
 \subsection{Polynomial regression}
 What if our data is better modeled as a polynomial? For instance, fitting a linear model to data shown in Figure \ref{linreg-fig:poly-data} doesn't seem appropriate. As it turns out, the following model provides a much better representation:
@@ -378,5 +401,71 @@ Given that we can treat such complicated functions, what's with the word \textit
 \caption{Non-linear relationship between house price and size. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_reg/poly.ipynb}{\color{blue} here}}.
 \label{linreg-fig:poly-data}
 \end{figure}
+
+
+\appendix
+\section{Linear algebra}
+Here we present definitions and proofs of most linear algebra results used in the notes.
+\begin{definition}
+The conjugate transpose $A^*$ of an $m\times n$ complex matrix $A$ is an matrix $n \times m$ given by $A^*_{ij}=\overline{A_{ji}}$. In other words, first we transpose $A$ and then take the complex conjugate of every entry, as such:
+\begin{equation}
+    A =
+    \begin{pmatrix}
+        1 & 1+i & 2i \\
+        3+2i & 2 & 5 \\
+    \end{pmatrix},
+    \qquad
+    A^* =
+    \begin{pmatrix}
+        1 & 3-2i \\
+        1-i & 2 \\
+        -2i & 5 \\
+    \end{pmatrix}.
+\end{equation}
+\end{definition}
+
+\begin{definition}
+A square complex matrix $A$ is called Hermitian matrix if it is equal to its conjugate transpose $A=A^*$. The following is an example:
+\begin{equation}
+    A =
+    \begin{pmatrix}
+        1 & 1+i \\
+        1-i & 1 \\
+    \end{pmatrix}.
+\end{equation}
+When $A$ is real, this is equivalent to saying $A$ is symmetric.
+\end{definition}
+
+\begin{theorem}
+Eigenvalues of a Hermitian matrix are real.
+\end{theorem}
+ 
+\begin{proof}
+Let $A$ be a Hermitian matrix and consider its eigenvalues and eigenvectors:
+\begin{equation}
+    Av_n=\lambda_nv_n.
+\end{equation}
+Applying $v_n^*$ to both sides:
+\begin{equation}
+    \lambda_n |v_n|^2 = v_n^*Av_n = v_n^*A^*v_n = (Av_n)^*v_n = (\lambda_nv_n)^*v_n = \overline{\lambda_n}|v_n|^2
+    \label{appendix-eq:eig}
+\end{equation}
+where $|v_n|^2=v_n^*v_n>0$. Therefore, $\lambda_n=\overline{\lambda_n}$, which means $\lambda_n$ is real.
+\end{proof}
+
+\begin{theorem}
+Eigenvectors of a Hermitian matrix $A$ with different eigenvalues are orthogonal, i.e.
+\begin{equation}
+    \lambda_n\ne\lambda_m \to v_n^*v_m=0.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+\begin{equation}
+    \lambda_mv_n^*v_m = v_n^*(\lambda_mv_m) = v_n^*Av_m = v_n^*A^*v_m = (Av_n)^*v_m = \lambda_nv_n^*v_m,
+\end{equation}
+where the last one uses the fact that $\lambda_n$ is real. Thus, we've shown $(\lambda_m - \lambda_n)v_n^*v_m = 0$, and since we're assuming $\lambda_n\ne\lambda_m$, it follows that $v_n^*v_m=0$.
+\end{proof}
+
 
 \end{document}
