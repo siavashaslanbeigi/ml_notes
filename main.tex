@@ -42,21 +42,25 @@
 
 % INTRODUCTION =========================================
 \section{Introduction}
+Machine learning is a collection of techniques which allow computers to complete tasks by learning from data. It grew out of work in Artificial Intelligence (AI). Traditionally, we program computers to do what we want by giving them precise instructions. There are problems for which this technique doesn't work very well. 
 
-% WELCOME ----------------------------------------------
-\subsection{Welcome}
-Machine learning is a collection of techniques which allow computers to learn from data to complete tasks, instead of being explicitly programmed to do so.The ranking which Google uses for search results is a machine learning algorithm. Spam filters are also learning algorithms; it would be impossible to list all possible spam emails one could receive. Machine learning grew out of work in Artificial Intelligence (AI). There are many tasks for which we need machines to learn on their own. Some modern applications of machine learning include:
+Consider the problem of recognizing hand-written digits: given an image of a hand-written digit, the computer is supposed to map it to the corresponding digit, i.e. pick correctly from $0,1,\dots,9$. Figure \ref{intro-fig:mnist-examples} shows examples of hand-written digits. It is quite easy for a human to recognize these digits correctly, even though none of them have the exact same shape. Programming a computer to do the same turns out to be very difficult. The reason is that it's impossible to explicitly tell the computer about all possible shapes; there are just too many of them. Machine learning approaches this problem differently: we present the algorithm images like those shown in Figure \ref{intro-fig:mnist-examples} (input), as well as the correct digits they represent (output), and let the algorithm figure out for itself what the correct way of recognizing hand-written digits is. Once the algorithm is trained on the data, we can use it to recognize digits not in the dataset, i.e. to make predictions. This technique has proved more reliable than any other approach so far. It also seems more inline with how humans learn from experience.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.4]{images/intro/mnist-ex.png}
+\caption{Examples of handwritten digits from the MNIST dataset.}
+\label{intro-fig:mnist-examples}
+\end{figure}
+Other modern applications of machine learning include:
 \begin{itemize}
+    \item Spam filters: it is impossible to explicitly list all possible spam emails one might receive.
     \item Database mining: growth of automation/web has resulted in much larger data sets which need to be understood. Examples include web click data, medical records, etc.
-    \item Handwritten digit recognition. It is surprisingly easy for humans to recognize hand-written digits, even though they could be written in many different ways. This problem is hard to solve by explicitly programming the computer to recognize shapes.
-    \item Natural Language Processing (NLP). This is effort to make computers understand text.
+    \item Natural Language Processing (NLP), whose aim is to make computers understand text.
     \item Self-customizing programs, such as Netflix product recommendations.
     \item Understanding the human brain. How is it that we humans learn?
 \end{itemize}
-
-% What is machine learning? ----------------------------
-\subsection{What is machine learning?}
-Some definitions of machine learning:
+Here are two formal definitions of machine learning:
 \begin{itemize}
     \item Arthur Samuel (1959): Field of study that gives computers the ability to learn without being explicitly programmed. Samuel built a Checkers playing program where the computer would learn from playing tens of thousands of games against itself. This was the world's first self-learning program.
     \item Tom Mitchell (1998): A computer program is said to learn from experience E with respect to some task T and some performance measure P, if its performance on T, as measured by P, improves with experience E.
@@ -69,7 +73,7 @@ Supervised learning is the most common type of machine learning problem. The nam
 
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.8]{images/intro/house-prices.jpg}
+\includegraphics[scale=0.7]{images/lin_reg/poly-data.pdf}
 \caption{Predicting house prices.}
 \label{into-house-prices}
 \end{figure}
