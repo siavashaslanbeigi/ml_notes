@@ -8,6 +8,7 @@
 \usepackage{amsthm}
 \usepackage{makecell,tabularx}
 \usepackage{hyperref}
+\usepackage{subcaption}
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[theorem]
@@ -451,9 +452,9 @@ Redundant features can also make $X^TX$ non-invertible. In the following design 
         X =
     \begin{pmatrix}
         1 & 2104 & 2104 \\
-        1 & 2104 & 2104 \\
-        1 & 2104 & 2104 \\
-        1 & 2104 & 2104 \\
+        1 & 1416 & 1416 \\
+        1 & 1534 & 1534 \\
+        1 & 852 & 852 \\
     \end{pmatrix}.
 \end{equation}
 It can be checked that $\text{det}(X^TX)=0$. In fact, it's more subtle than that. The following design matrix also satisfies $\text{det}(X^TX)=0$:
@@ -575,6 +576,80 @@ Eigenvectors of a Hermitian matrix $A$ with different eigenvalues are orthogonal
 \end{equation}
 where the last one uses the fact that $\lambda_n$ is real. Thus, we've shown $(\lambda_m - \lambda_n)v_n^*v_m = 0$, and since we're assuming $\lambda_n\ne\lambda_m$, it follows that $v_n^*v_m=0$.
 \end{proof}
+
+% Singular-Value Decomposition =========================
+\section{Singular-Value Decomposition}
+The singular-value decomposition (SVD) is a powerful result that applies to any matrix. In this section, we will derive the SVD and explain what it means intuitively. The SVD states that any $m\times n$ matrix $M$ can be written as
+\begin{equation}
+    M=UDV^T,
+\end{equation}
+where
+\begin{itemize}
+    \item $U$ is an $m\times m$ unitary matrix, i.e. it satisfies $U^TU=UU^T=1_m$, where $1_m$ is the $m$-dimensional identity matrix.
+    \item $V$ is an $n\times n$ unitary matrix, i.e. satisfies $V^TV=VV^T=1_n$, where $1_n$ is the $n$-dimensional identity matrix.
+    \item $D$ is an $m\times n$ matrix with zero elements everywhere except $D_{ii}\ge0$ where $i=1,\dots,\text{min}(m, n)$. So $D$ is diagonal and has at most $\text{min}(m, n)$ elements on the diagonal. These elements are called the singular values of $X$.
+\end{itemize}
+Before delving into the proof, let's go through a simple example to understand what the matrices $V$, $D$, and $U$ are doing. Consider the following matrix
+\begin{equation}
+    M = \frac{1}{2}
+    \begin{pmatrix}
+        -\sqrt{3} & 3 \\
+        5 & -\sqrt{3} \\
+    \end{pmatrix},
+\end{equation}
+which admits the SVD
+\begin{equation}
+    U = \frac{1}{2}
+    \begin{pmatrix}
+        -1 & \sqrt{3} \\
+        \sqrt{3} & 1 \\
+    \end{pmatrix}, \qquad
+    D =
+    \begin{pmatrix}
+        3 & 0 \\
+        0 & 1 \\
+    \end{pmatrix}, \qquad
+    V = \frac{1}{2}
+    \begin{pmatrix}
+        \sqrt{3} & 1 \\
+        -1 & \sqrt{3} \\
+    \end{pmatrix}.
+\end{equation}
+Let's look at the action of $V^T$ on unit vectors $u_x$ and $u_y$. This is shown in Figure \ref{linalg-fig:svd-v}. It rotates the two vectors counterclockwise by $\pi/6$. We shouldn't be surprised that $V^T$ is acting as a rotation, since it is unitary. Let's remember why this is. A unitary matrix $A$ preserves inner products between vectors:
+\begin{equation}
+    (Av_1)^T(Av_2) = v_1^T(A^TA)v_2 = v_1^Tv_2.
+\end{equation}
+This means the angle between $v_1$ and $v_2$ is the same as that between $Av_1$ and $Av_2$. It also means that the norm of $v_1$ and $v_2$ remain unchanged under the action of $A$. Rotations and reflections have these properties.
+Figure \ref{linalg-fig:svd-d} shows the application of $D$, after $V^T$ has been applied. We see that the vectors are being stretched ($D_{11}=3$) times along the $x$-axis, and remain unchanged along the $y$-axis, because $D_{22}=1$.
+Finally, Figure \ref{linalg-fig:svd-u} shows the application of $U$ after $DV^T$ has been applied. The vectors are being reflected along the line that makes $\pi/3$ angle with the $x$-axis. Note that $UDV^Tu_x$ and $UDV^Tu_y$ are the first and second columns of $M$, respectively.
+
+\begin{figure}[ht]
+    \centering 
+    \begin{subfigure}[t]{\linewidth}
+        \centering
+        \includegraphics[scale=0.45]{images/lin_alg/svd_v.pdf}
+        \caption{First step: applying $V^T$ to unit vectors $u_x$ (light red) and $u_y$ (light blue). $V^Tu_x$ and $V^Tu_y$ are the darker red and blue arrows, respectively.}
+        \label{linalg-fig:svd-v}
+    \end{subfigure}%
+    
+    \begin{subfigure}[t]{\linewidth}
+        \centering
+        \includegraphics[scale=0.45]{images/lin_alg/svd_d.pdf}
+        \caption{Second step: applying $D$ to $V^Tu_x$ (light red) and $V^Tu_y$ (light blue). $DV^Tu_x$ and $DV^Tu_y$ are the darker red and blue arrows, respectively.}
+        \label{linalg-fig:svd-d}
+    \end{subfigure}%
+    
+    \begin{subfigure}[t]{\linewidth}
+        \centering
+        \includegraphics[scale=0.45]{images/lin_alg/svd_u.pdf}
+        \caption{Third step: applying $U$ to to $DV^Tu_x$ (light red) and $DV^Tu_y$ (light blue). $UDV^Tu_x$ and $UDV^Tu_y$ are the darker red and blue arrows, respectively.}
+        \label{linalg-fig:svd-u}
+    \end{subfigure}
+    \caption{Applying SVD of $M$ step by step. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_alg/svd.ipynb}{\color{blue} here}.}
+    \label{linalg-fig:svd}
+\end{figure}
+
+SVD is telling us that any matrix can be decomposed into a rotation/reflection, scaling along the coordinate axes, and another rotation/reflection. This result applies even when $M$ is not a square matrix. For instance, if $M$ is $2\times3$: $V^T$ is a rotation/reflection in $\mathbb{R}^3$, $D$ projects the resulting vector into $\mathbb{R}^2$ and stretches it along the coordinate axes, and $U$ applies a final rotation/reflection in $\mathbb{R}^2$.
 
 
 \end{document}
