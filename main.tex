@@ -517,7 +517,7 @@ Given that we can treat such complicated functions, what's with the word \textit
 \section{Linear Algebra}
 Here we present definitions and proofs of most linear algebra results used in the notes.
 \begin{definition}
-The conjugate transpose $A^*$ of an $m\times n$ complex matrix $A$ is an matrix $n \times m$ given by $A^*_{ij}=\overline{A_{ji}}$. In other words, first we transpose $A$ and then take the complex conjugate of every entry, as such:
+The conjugate transpose $A^*$ of an $m\times n$ complex matrix $A$ is an $n \times m$ matrix defined as follows: $A^*_{ij}=\overline{A_{ji}}$. In other words, $A^*$ is obtained by first transposing $A$, and then take taking the complex conjugate of every entry, as shown in the example below:
 \begin{equation}
     A =
     \begin{pmatrix}
@@ -535,7 +535,7 @@ The conjugate transpose $A^*$ of an $m\times n$ complex matrix $A$ is an matrix 
 \end{definition}
 
 \begin{definition}
-A square complex matrix $A$ is called Hermitian matrix if it is equal to its conjugate transpose $A=A^*$. The following is an example:
+A square complex matrix $A$ is called Hermitian matrix if it is equal to its conjugate transpose $A=A^*$. The following is an example of an Hermitian matrix:
 \begin{equation}
     A =
     \begin{pmatrix}
@@ -543,7 +543,7 @@ A square complex matrix $A$ is called Hermitian matrix if it is equal to its con
         1-i & 1 \\
     \end{pmatrix}.
 \end{equation}
-When $A$ is real, this is equivalent to saying $A$ is symmetric.
+Note that a real Hermitian matrix is symmetric.
 \end{definition}
 
 \begin{theorem}
@@ -577,6 +577,28 @@ Eigenvectors of a Hermitian matrix $A$ with different eigenvalues are orthogonal
 where the last one uses the fact that $\lambda_n$ is real. Thus, we've shown $(\lambda_m - \lambda_n)v_n^*v_m = 0$, and since we're assuming $\lambda_n\ne\lambda_m$, it follows that $v_n^*v_m=0$.
 \end{proof}
 
+\begin{definition}
+\label{linalg-def:pos-def}
+A Hermitian matrix $A$ is called \textit{positive definite} if it satisfies the following condition for all vectors $v$:
+\begin{equation}
+    v^*Av > 0.
+\end{equation}
+Note that $v^*Av$ is real, because $A$ is Hermitian: $\overline{v^*Av}=(v^*Av)^*=v^*A^*v=v^*Av$. Similarly, $A$ is called positive \textit{semi}-definite if $v^*Av$ is positive or zero: $v^*Av \ge 0$.
+\end{definition}
+
+\begin{theorem}
+\label{linalg-def:pos-def-eig}
+All eigenvalues of a positive-definite matrix are positive. Similarly, all eigenvalues of a positive semi-definite matrix are non-negative.
+\end{theorem}
+
+\begin{proof}
+Let $A$ be a positive definite matrix and consider its eigenvalues and eigenvectors:
+\begin{equation}
+    Av_n=\lambda_nv_n.
+\end{equation}
+Applying $v^*$ t both sides: $\lambda_nv_n^*v_n=v_n^*Av_n > 0$, which implies $\lambda_n > 0$ since $v_n^*v_n>0$. The same argument shows that any non-zero eigenvalue of a positive semi-definite matrix is positive.
+\end{proof}
+
 % Singular-Value Decomposition =========================
 \section{Singular-Value Decomposition}
 The singular-value decomposition (SVD) is a powerful result that applies to any matrix. In this section, we will derive the SVD and explain what it means intuitively. The SVD states that any $m\times n$ matrix $M$ can be written as
@@ -589,6 +611,8 @@ where
     \item $V$ is an $n\times n$ unitary matrix, i.e. satisfies $V^TV=VV^T=1_n$, where $1_n$ is the $n$-dimensional identity matrix.
     \item $D$ is an $m\times n$ matrix with zero elements everywhere except $D_{ii}\ge0$ where $i=1,\dots,\text{min}(m, n)$. So $D$ is diagonal and has at most $\text{min}(m, n)$ elements on the diagonal. These elements are called the singular values of $X$.
 \end{itemize}
+
+\subsection{Intuition}
 Before delving into the proof, let's go through a simple example to understand what the matrices $V$, $D$, and $U$ are doing. Consider the following matrix
 \begin{equation}
     M = \frac{1}{2}
@@ -625,21 +649,21 @@ Finally, Figure \ref{linalg-fig:svd-u} shows the application of $U$ after $DV^T$
 
 \begin{figure}[ht]
     \centering 
-    \begin{subfigure}[t]{\linewidth}
+    \begin{subfigure}[ht]{\linewidth}
         \centering
         \includegraphics[scale=0.45]{images/lin_alg/svd_v.pdf}
         \caption{First step: applying $V^T$ to unit vectors $u_x$ (light red) and $u_y$ (light blue). $V^Tu_x$ and $V^Tu_y$ are the darker red and blue arrows, respectively.}
         \label{linalg-fig:svd-v}
     \end{subfigure}%
     
-    \begin{subfigure}[t]{\linewidth}
+    \begin{subfigure}[ht]{\linewidth}
         \centering
         \includegraphics[scale=0.45]{images/lin_alg/svd_d.pdf}
         \caption{Second step: applying $D$ to $V^Tu_x$ (light red) and $V^Tu_y$ (light blue). $DV^Tu_x$ and $DV^Tu_y$ are the darker red and blue arrows, respectively.}
         \label{linalg-fig:svd-d}
     \end{subfigure}%
     
-    \begin{subfigure}[t]{\linewidth}
+    \begin{subfigure}[ht]{\linewidth}
         \centering
         \includegraphics[scale=0.45]{images/lin_alg/svd_u.pdf}
         \caption{Third step: applying $U$ to to $DV^Tu_x$ (light red) and $DV^Tu_y$ (light blue). $UDV^Tu_x$ and $UDV^Tu_y$ are the darker red and blue arrows, respectively.}
@@ -651,5 +675,94 @@ Finally, Figure \ref{linalg-fig:svd-u} shows the application of $U$ after $DV^T$
 
 SVD is telling us that any matrix can be decomposed into a rotation/reflection, scaling along the coordinate axes, and another rotation/reflection. This result applies even when $M$ is not a square matrix. For instance, if $M$ is $2\times3$: $V^T$ is a rotation/reflection in $\mathbb{R}^3$, $D$ projects the resulting vector into $\mathbb{R}^2$ and stretches it along the coordinate axes, and $U$ applies a final rotation/reflection in $\mathbb{R}^2$.
 
+
+\subsection{Proof}
+Let's now prove the singular-value decomposition. Consider the following two matrices
+\begin{equation}
+    \Sigma = M^TM, \qquad W = MM^T.
+\end{equation}
+Note that $\Sigma$ is $n\times n$, $W$ is $m\times m$, and they are both symmetric and positive semi-definite (see \ref{linalg-def:pos-def}):
+\begin{align*}
+    v^T\Sigma v &= v^TM^TMv = (Mv)^T(Mv) = \lVert Mv \rVert^2 \ge 0,\\
+    v^TWv &= v^TMM^Tv = (M^Tv)^T(M^Tv) = \lVert M^Tv \rVert^2 \ge 0.
+\end{align*}
+Therefore, they can be diagonalized and all of their eigenvalues are non-negative (see \ref{linalg-def:pos-def-eig}):
+\begin{equation}
+    \Sigma v^{(i)} = \lambda_i v^{(i)}, \qquad
+    (v^{(i)})^T v^{(j)} = \delta_{ij}, \qquad
+    \lambda_i \ge 0
+\end{equation}
+where $i,j=1,\dots n$ and similarly for $W$:
+\begin{equation}
+    W v^{(i)} = \xi_i w^{(i)}, \qquad
+    (w^{(i)})^T w^{(j)} = \delta_{ij}, \qquad
+    \xi_i \ge 0,
+\end{equation}
+where $i,j=1,\dots m$.
+
+The following results show that the eigenvalues and eigenvectors of $\Sigma$ and $W$ are closely related.
+
+\begin{lemma}
+\label{svd-lemma:mv}
+When $\lambda_i > 0$, $Mv^{(i)}$ is an eigenvector of $W$ with eigenvalue $\lambda_i$. Also $\lVert Mv^{(i)} \rVert^2 =  \lambda_i$.
+\end{lemma}
+\begin{proof}
+\begin{equation}
+    W(Mv^{(i)}) = MM^TMv^{(i)} =M\Sigma v^{(i)} = M(\lambda_iv^{(i)}) = \lambda_i(Mv^{(i)}).
+\end{equation}
+Consider now the norm of $Mv^{(i)}$:
+\begin{equation}
+    (Mv^{(i)})^T(Mv^{(i)}) = (v^{(i)})^TM^TMv^{(i)} = (v^{(i)})^T\Sigma v^{(i)} = \lambda_i.
+\end{equation}
+Note that when $\lambda_i=0$, the norm of $Mv^{(i)}$ is zero, which means $Mv^{(i)}$ is the zero vector.
+\end{proof}
+
+\begin{lemma}
+\label{svd-lemma:mtw}
+When $\xi_i > 0$, $M^Tw^{(i)}$ is an eigenvector of $\Sigma$ with eigenvalue $\xi_i$. Also $\lVert M^Tw^{(i)} \rVert^2 =  \xi_i$.
+\end{lemma}
+\begin{proof}
+\begin{equation}
+    \Sigma(M^Tw^{(i)}) = M^T MM^T w^{(i)} =M^T W w^{(i)} = M^T(\xi_iw^{(i)}) = \xi_i(M^Tw^{(i)}).
+\end{equation}
+Consider now the norm of $M^Tw^{(i)}$:
+\begin{equation}
+    (M^Tw^{(i)})^T(M^Tw^{(i)}) = (w^{(i)})^TMM^Tw^{(i)} = (w^{(i)})^TW w^{(i)} = \xi_i.
+\end{equation}
+Note that when $\xi_i=0$, the norm of $M^Tw^{(i)}$ is zero, which means $M^Tw^{(i)}$ is the zero vector.
+\end{proof}
+
+\begin{corollary}
+$\Sigma$ and $W$ share the same set of non-zero eigenvalues, of which there are at most $\text{min}(m, n)$.
+\end{corollary}
+\begin{proof}
+Every non-zero eigenvalue of $\Sigma$ is also an eigenvalue of $W$ (see \ref{svd-lemma:mv}). But can $W$ have more non-zero eigenvalues than $\Sigma$? No, because every non-zero eigenvalue of $W$ is also an eigenvalue of $\Sigma$ (see \ref{svd-lemma:mtw}). Since $\Sigma$ and $W$ share the same set of non-zero eigenvalues, there cannot be more than $\text{min}(m, n)$ of them. For instance, if $m=2$ and $n=3$, $W$ can have at most two non-zero eigenvalues (because it's $2\times2$), and since $\Sigma$ cannot have more non-zero eigenvalues than $W$, it is guaranteed to have at least one zero eigenvalue, which means it is not invertible. 
+\end{proof}
+
+Let $\lambda_1,\dots,\lambda_k$ ($k\le \text{min}(m, n)$) denote the strictly positive eigenvalues of $\Sigma$ and $W$. Also let $v^{(1)},\dots,v^{(k)}$ be the corresponding eigenvectors of $\Sigma$, and $w^{(1)},\dots,w^{(k)}$ those of $W$. It follows from \ref{svd-lemma:mv} that
+\begin{equation}
+    w^{(i)} = \frac{1}{\sqrt{\lambda_i}}Mv^{(i)} \qquad i=1,\dots,k.
+    \label{svd-eq:w}
+\end{equation}
+Let $v^{(k+1)},\dots,v^{(n)}$ and $w^{(k+1)},\dots,w^{(m)}$ be orthonormal eigenvectors corresponding to zero eigenvalues of $\Sigma$ and $W$, respectively. Now we define $V$, $D$, and $U$ as follows
+\begin{align*}
+    V_{ij} &= v^{(j)}_i, \qquad i,j=1,\dots,n\\
+    U_{ij} &= w^{(j)}_i, \qquad i,j=1,\dots,m\\
+    D_{ii} &= \sqrt{\lambda_i}, \qquad i=1,\dots,k,
+\end{align*}
+and $D_{ij}=0$ otherwise. Note that columns of $V$ are eigenvectors of $\Sigma$, columns of $U$ are eigenvectors of $W$, and $D$ is zero everywhere except for the first $k$ diagonal elements.
+(Check for yourself that $V^TV=1_{n}$ and $W^TW=1_{m}$, and that from these it follows $VV^T=1_{n}$ and $WW^T=1_{m}$.)
+Finally:
+\begin{align*}
+    [UDV^T]_{ij} &= \sum_{i'=1}^{m}U_{ii'}\sum_{j'=1}^{n}D_{i'j'}V_{jj'} \\
+    &= \sum_{i'=1}^{k}w^{(i')}_i\sum_{j'=1}^{k}\sqrt{\lambda_{j'}}\delta_{i'j'}v^{(j')}_{j} \\
+    &= \sum_{i'=1}^{k}w^{(i')}_i\sqrt{\lambda_{i'}}v^{(i')}_{j}\\
+    &= \sum_{i'=1}^{k}[Mv^{(i')}]_iv^{(i')}_{j}\\
+    &= \sum_{i'=1}^{k}[Mv^{(i')}]_iv^{(i')}_{j} + \sum_{i'=k+1}^{n}[Mv^{(i')}]_iv^{(i')}_{j}\\
+    &= \sum_{i'=1}^{n}[Mv^{(i')}]_iv^{(i')}_{j}\\
+    & = [MVV^T]_{ij}\\
+    & = M_{ij}.
+\end{align*}
+The second equality uses the definitions of $W$, $V$, $D$, and the fact that $D_{ij}=0$ for all $i,j>k$. The fourth equality uses \eqref{svd-eq:w}, and the fifth equality follows from the fact that $Mv^{(i)}=0$ for all $i>k$ (see \eqref{svd-lemma:mv}).
 
 \end{document}
