@@ -389,7 +389,7 @@ The normal equation \eqref{linreg-eq:normal} can only work if $X^TX$ is invertib
 It can be checked that $\text{det}(X^TX)=0$. Therefore, $X^TX$ is not invertible. Is there something special about this data set? As it turns out, this result holds no matter how we tweak the numbers. This may seem a bit surprising. However, let's consider what it would've meant if $X^TX$ was invertible. The dataset contains five features (including $x_0$), so the normal equation will solve for five parameters $\theta_0,\theta_1\dots\theta_4$, but using only two examples. In short, there are two equations and five unknowns. There's not enough data to fix the parameters of the model, which manifests itself through the non-invertibility of $X^TX$.
 
 More generally, we should expect that $X^TX$ is not invertible when $m<n+1$, i.e. when there are fewer examples than features.
-Let's prove this. We will make use of the Singular Value Decomposition (SVD), which states that any matrix $m\times n$ can be written as
+Let's prove this. We will make use of the Singular-Value Decomposition (SVD), which states that any matrix $m\times n$ can be written as
 \begin{equation}
     A = UDV^T,
 \end{equation}
@@ -399,6 +399,7 @@ where:
     \item $V$ is an $n\times n$ matrix which satisfies $V^TV=VV^T=1_n$, where $1_n$ is the $n$-dimensional identity matrix.
     \item $D$ is an $m\times n$ matrix with zero elements everywhere except $D_{ii}\ge0$ where $i=1,\dots,\text{min}(m, n)$. So $D$ is diagonal and has at most $\text{min}(m, n)$ elements on the diagonal. These elements are called the singular values of $X$.
 \end{itemize}
+Appendix \ref{section:svd} provides a detailed explanation of SVD, and its geometric meaning.
 It can be checked that \eqref{linreg-eq:design-mat-noninvert} admits the following SVD:
 \begin{align*}
     U &=
@@ -473,8 +474,21 @@ The reason is that $x_2$ is a linear combination of $x_0$ and $x_1$: $x_2 = x_0 
 In summary, if we find that $X^TX$ is not invertible, we can look for the following in the dataset:
 \begin{itemize}
     \item Are there more unique examples than features? Of course, if possible, we should aim for many more examples than features, maybe $m\gtrsim 10n$ to be safe.
-    \item Are there any redundant features? This is harder to check if there are many features, because one needs to determine which feature is a linear combination of the others.
+    \item Are there any redundant features? This is harder to check, because one needs to determine which feature is a linear combination of the others.
 \end{itemize}
+
+% When the normal equation is infeasible ===============
+\subsection{When the normal equation is infeasible}
+Using the normal equation requires inverting $X^TX$, which is an $(n+1)\times (n+1)$ matrix. When $n$ is large, this may not be feasible in practice. Matrix inversion is typically an $\mathcal{O}(n^3)$ operation. This is demonstrated in Figure  \ref{linreg-fig:inv-time}, where a matrix inversion routine in Python is applied to random matrices with different dimensions.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.7]{images/lin_reg/inv_time.pdf}
+\caption{How matrix inversion scales with dimension. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_reg/inv_time.ipynb}{\color{blue} here}.}
+\label{linreg-fig:inv-time}
+\end{figure}
+
+If inverting $X^TX$ is not possible in practice, how else can we estimate the parameters $\theta$? Remember we obtained the normal equation by minimizing the cost function $J(\theta)$ (see \eqref{linreg-eq:multi-costfunc} or \eqref{linreg-eq:multi-costfunc-mat}). In the next section we will describe an algorithm, called Gradient Descent, which directly minimizes $J(\theta)$ and is faster for large values of $n$. How large is too large for the normal equation? About $n\simeq10000$. That seems like an unreasonably large number of features. For instance, it's hard to imagine there could be $10000$ features relevant for predicting house prices. Consider, though, making predictions based on images. If every pixel is considered a feature, which is often the case for image recognition problems, having $10000$ features is equivalent to processing images that are only $100\text{px}\times100\text{px}$; not large by any means!
 
 
 % Polynomial Regression --------------------------------
@@ -507,11 +521,12 @@ Given that we can treat such complicated functions, what's with the word \textit
 \begin{figure}[ht]
 \centering
 \includegraphics[scale=0.7]{images/lin_reg/poly-data.pdf}
-\caption{Non-linear relationship between house price and size. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_reg/poly.ipynb}{\color{blue} here}}.
+\caption{Non-linear relationship between house price and size. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_reg/poly.ipynb}{\color{blue} here}.}
 \label{linreg-fig:poly-data}
 \end{figure}
 
 
+\newpage
 \appendix
 % Linear Algebra =======================================
 \section{Linear Algebra}
@@ -601,6 +616,7 @@ Applying $v^*$ t both sides: $\lambda_nv_n^*v_n=v_n^*Av_n > 0$, which implies $\
 
 % Singular-Value Decomposition =========================
 \section{Singular-Value Decomposition}
+\label{section:svd}
 The singular-value decomposition (SVD) is a powerful result that applies to any matrix. In this section, we will derive the SVD and explain what it means intuitively. The SVD states that any $m\times n$ matrix $M$ can be written as
 \begin{equation}
     M=UDV^T,
