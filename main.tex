@@ -228,7 +228,7 @@ We have solved the problem we posed in the beginning of this section. Given the 
 
 % Linear regression with multiple variables ============
 \section{Linear regression with multiple variables}
-In the previous section, we wanted to predict the price of a house as a function of its size. Of course, there are many more factors would could affect house prices:
+In the previous section, we wanted to predict the price of a house as a function of its size. Of course, there are many more factors that could affect house prices:
 
 \begin{center}
 \begin{tabularx}{\linewidth}{ |l|X|X|X|l| } 
@@ -355,12 +355,13 @@ Writing expressions in matrix form also makes it easier to see when linear algeb
 
 % Normal equation --------------------------------------
 \subsection{Normal equation}
+\label{linreg-sec:normaleq}
 Just like the univariate case, $J$ is a quadratic function of $\theta_0, \theta_1, \dots, \theta_n$, and its global minimum occurs where its gradient is zero. Let's compute the gradient of $J$ with respect to $\theta_j$:
-\begin{align*}
-    \frac{\partial J}{\partial \theta_j} &= \frac{1}{m}\sum_{i=1}^{m}(\theta^Tx^{(i)} - y^{(i)})x^{(i)}_j\\
-    &=\frac{1}{m}\sum_{i=1}^{m}[X\theta - Y]_iX_{ij}\\
-    &=\frac{1}{m}[X^T(X\theta - Y)]_j,
-\end{align*}
+\begin{align}
+    \frac{\partial J}{\partial \theta_j} &= \frac{1}{m}\sum_{i=1}^{m}(\theta^Tx^{(i)} - y^{(i)})x^{(i)}_j\notag\\
+    &=\frac{1}{m}\sum_{i=1}^{m}[X\theta - Y]_iX_{ij}\notag\\
+    &=\frac{1}{m}[X^T(X\theta - Y)]_j,\label{linreg-eq:costfunc-mat}
+\end{align}
 or equivalently
 \begin{equation}
     \nabla_{\theta} J = \frac{1}{m}X^T(X\theta - Y).
@@ -399,29 +400,7 @@ where:
     \item $V$ is an $n\times n$ matrix which satisfies $V^TV=VV^T=1_n$, where $1_n$ is the $n$-dimensional identity matrix.
     \item $D$ is an $m\times n$ matrix with zero elements everywhere except $D_{ii}\ge0$ where $i=1,\dots,\text{min}(m, n)$. So $D$ is diagonal and has at most $\text{min}(m, n)$ elements on the diagonal. These elements are called the singular values of $X$.
 \end{itemize}
-Appendix \ref{section:svd} provides a detailed explanation of SVD, and its geometric meaning.
-It can be checked that \eqref{linreg-eq:design-mat-noninvert} admits the following SVD:
-\begin{align*}
-    U &=
-    \begin{pmatrix}
-        -1 & 1 \\
-        -1 & 1 \\
-    \end{pmatrix} \\
-    D &= 
-    \begin{pmatrix}
-        2537 & 0 & 0 & 0 & 0 \\
-        0 & 8 & 0 & 0 & 0 \\
-    \end{pmatrix} \\
-    V &= 
-    \begin{pmatrix}
-        0 & 0 & 0 & 0 & -1 \\
-        -1 & 0 & 0 & 0 & 0 \\
-        0 & 0 & 1 & 0 & 0 \\
-        0 & 0 & 0 & 1 & 0 \\
-        0 & 1 & 0 & 0 & 0 \\
-    \end{pmatrix}. 
-\end{align*}
-We can now express $X^TX$ in terms of the SVD of the design matrix $X=UDV^T$ (remember that $X$ is $m\times (n+1)$ dimensional, so $D$ and $V$ are $m\times (n+1)$ and $(n+1)\times (n+1)$ dimensional, respectively):
+Appendix \ref{section:svd} provides a detailed explanation of SVD and its geometric meaning. Consider now the SVD of the design matrix $X=UDV^T$ (remember that $X$ is $m\times (n+1)$ dimensional, so $D$ and $V$ are $m\times (n+1)$ and $(n+1)\times (n+1)$ dimensional, respectively):
 \begin{align*}
     X^TX &= (UDV^T)^T(UDV^T)\\
     &= VD^TU^TUDV^T \\
@@ -523,6 +502,61 @@ Given that we can treat such complicated functions, what's with the word \textit
 \includegraphics[scale=0.7]{images/lin_reg/poly-data.pdf}
 \caption{Non-linear relationship between house price and size. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_reg/poly.ipynb}{\color{blue} here}.}
 \label{linreg-fig:poly-data}
+\end{figure}
+
+\subsection{A probabilistic view}
+Suppose we look at houses with similar characteristics such as number of bedrooms, number of floors, age, etc. Even though they are similar, they will likely not have the exact same price. For instance, one owner may be under time pressure and is willing to sell below market price. We should always expect a certain degree of randomness that our features cannot capture. We can, however, hope to design a model that makes the right predictions \textit{on average}. This suggests a probabilistic approach for modeling. For a given set of features $x$, we can think of the house price $y$ as a random variable with a certain probability distribution, whose mean is given by the hypothesis $h_{\theta}(x)$.
+
+For simplicity, let's say $y$ is a normal distribution with standard deviation $\sigma$ and that all observations are independent. What is the probability of observing the training set $(x^{(1)}, y^{(1)}), \dots, (x^{(m)}, y^{(m)})$, assuming that our hypothesis $h_{\theta}(x)$ is correct on average? The probability that we observe a house with features $x^{(i)}$ and price $y^{(i)}$ is
+\begin{equation}
+    P^{(i)} = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left[-\frac{(y^{(i)} - h_{\theta}(x^{(i)}))^2}{2\sigma^2}\right].
+\end{equation}
+Since we're assuming all observations are independent, the probability of observing the training set is given by
+\begin{equation}
+    P = \prod_{i=1}^mP^{(i)} = \frac{1}{(2\pi\sigma^2)^{\frac{m}{2}}}\exp\left[-\sum_{i=1}^{m}\frac{(y^{(i)} - h_{\theta}(x^{(i)}))^2}{2\sigma^2}\right].
+    \label{linreg-eq:mle-simple1}
+\end{equation}
+The quantity in the exponent can be rewritten in terms of the cost function
+(see \eqref{linreg-eq:multi-costfunc})
+\begin{equation}
+    P = \frac{1}{(2\pi\sigma^2)^{\frac{m}{2}}}\exp\left[-\frac{mJ(\theta)}{\sigma^2}\right].
+    \label{linreg-eq:mle-simple2}
+\end{equation}
+Interesting! The probability of observing the training set can be written in terms of the cost function. In fact, the parameters $\theta$ that maximize the probability of observing the training set are precisely those that minimize the cost function $J(\theta)$. Picking the parameters of the model to maximize the probability of observations is called \textit{maximum likelihood estimation}. Before we picked the cost function based on heuristic arguments; now we see there's a deeper principle from which it can be arrived at.
+
+Note that going from \eqref{linreg-eq:mle-simple1} to \eqref{linreg-eq:mle-simple2} assumes all observations are independent and have the same standard deviation $\sigma$. If every $y^{(i)}$ has its own standard deviation $\sigma_i$, the following cost function should be minimized:
+\begin{equation}
+    \tilde{J}(\theta) = \frac{1}{2m}\sum_{i=1}^{m}\frac{1}{\sigma_i^2}(h_{\theta}(x^{i}) - y^{(i)})^2.
+\end{equation}
+The wider the distribution of $y^{(i)}$ (i.e. the larger $\sigma_i$), the less it contributes to the overall cost. This makes sense: if $\sigma_i$ is very large compared to the other examples, we do not have much confidence in $y^{(i)}$, so we shouldn't assign too much weight to it.
+
+We can further generalize to the case where $y^{(1)}, y^{(2)}, \dots, y^{(m)}$ are distributed as a multivariate Gaussian with covariance matrix $\Sigma$. Probability of observing the training set is then given by
+\begin{equation}
+    P = \frac{1}{(2\pi|\Sigma|)^{\frac{m}{2}}} e^{-m\tilde{J}(\theta)},
+\end{equation}
+where
+\begin{align}
+    \tilde{J} &= \frac{1}{2m}\sum_{i,i'=1}^{m}\Sigma^{-1}_{ii'}(y^{(i)} - h_{\theta}(x^{(i)}))(y^{(i')} - h_{\theta}(x^{(i')}))\notag\\
+    &= \frac{1}{2m}\sum_{i,i'=1}^{m}\Sigma^{-1}_{ii'}[Y - X\theta]_i[Y - X\theta]_{i'}\notag\\
+    &= \frac{1}{2m}(X\theta-Y)^T\Sigma^{-1}(X\theta-Y).
+\end{align}
+This expression is very similar to \eqref{linreg-eq:costfunc-mat}, except for the appearance of $\Sigma$. Again, maximizing $P$ is equivalent to minimizing $\tilde{J}$. Following the same steps as in section \ref{linreg-sec:normaleq}, it can be shown that
+\begin{equation}
+    \nabla_{\theta}\tilde{J}=\frac{1}{m}X^T\Sigma^{-1}(X\theta-Y).
+\end{equation}
+Setting $\nabla_{\theta}\tilde{J}$ to zero and solving for $\theta$:
+\begin{equation}
+    \theta = (X^T\Sigma^{-1}X)^{-1}X^T\Sigma^{-1}Y.
+    \label{linreg-eq:costfunc-mat-err}
+\end{equation}
+Figure \ref{linreg-fig:yerror} shows an example of using \eqref{linreg-eq:costfunc-mat} vs. \eqref{linreg-eq:costfunc-mat-err} to fit house prices. When the training set is large, the difference is likely quite small because variation in the data captures the underlying distribution quite well. Indeed, we cannot know the distribution of $\{y^{(i)}\}$ in the first place if we don't collect a lot of data. In physical experiments, the distribution of $y^{(i)}$ depends largely on the measuring apparatus. No measurement is ever 100\% accurate and it is crucial to understand the noise.
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.7]{images/lin_reg/yerror.pdf}
+\caption{Fitting house prices when d$y^{(i)}$ are drawn from different normal distributions. Blue dots show the mean of $y^{(i)}$ and the error bars show the standard deviation. Black dots are sampled house prices. The red fit uses \eqref{linreg-eq:costfunc-mat}, while the green fit uses \eqref{linreg-eq:costfunc-mat-err}. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_reg/yerror.ipynb}{\color{blue} here}.}
+\label{linreg-fig:yerror}
 \end{figure}
 
 
