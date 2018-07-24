@@ -45,7 +45,7 @@
 \section{Introduction}
 Machine learning is a collection of techniques which allow computers to complete tasks by learning from data. It grew out of work in Artificial Intelligence (AI). Traditionally, we program computers to do what we want by giving them precise instructions. There are problems for which this technique doesn't work very well. 
 
-Consider the problem of recognizing hand-written digits: given an image of a hand-written digit, the computer is supposed to map it to the corresponding digit, i.e. pick correctly from $0,1,\dots,9$. Figure \ref{intro-fig:mnist-examples} shows examples of hand-written digits. It is quite easy for a human to recognize these digits correctly, even though none of them have the exact same shape. Programming a computer to do the same turns out to be very difficult. The reason is that it's impossible to explicitly tell the computer about all possible shapes; there are just too many of them. Machine learning approaches this problem differently: we present the algorithm images like those shown in Figure \ref{intro-fig:mnist-examples} (input), as well as the correct digits they represent (output), and let the algorithm figure out for itself what the correct way of recognizing hand-written digits is. Once the algorithm is trained on the data, we can use it to recognize digits not in the dataset, i.e. to make predictions. This technique has proved more reliable than any other approach so far. It also seems more inline with how humans learn from experience.
+Consider the problem of recognizing hand-written digits: given an image of a hand-written digit, the computer is supposed to map it to the corresponding digit, i.e. pick correctly from $0,1,\dots,9$. Figure \ref{intro-fig:mnist-examples} shows examples of hand-written digits. It is quite easy for a human to recognize these digits correctly, even though none of them have the exact same shape. Programming a computer to do the same turns out to be difficult. The reason is that it's impossible to explicitly tell the computer about all possible shapes; there are just too many of them. Machine learning approaches this problem differently: we present the algorithm with images like those shown in Figure \ref{intro-fig:mnist-examples} (input), as well as the correct digits they represent (output), and let the algorithm figure out for itself what the correct way of recognizing hand-written digits is. Once the algorithm is trained on the data, we can use it to recognize digits not in the dataset, i.e. to make predictions. This technique has proven more reliable than any other approach. It also seems more inline with how humans learn from experience.
 
 \begin{figure}[ht]
 \centering
@@ -70,7 +70,7 @@ There are two main types of machine learning algorithms: supervised-learning and
 
 % Supervised learning ----------------------------------
 \subsection{Supervised learning}
-Supervised learning is the most common type of machine learning problem. The name \textbf{supervised} comes from the fact that the training samples (i.e. our data) contain the "right answers". In other words, for a set of inputs, we know what the output should be. Suppose we have the following data for prices of houses:
+Supervised learning is the most common type of machine learning problem. The name \textbf{supervised} comes from the fact that the training samples (i.e. data set) contain the ``right answers". In other words, for a set of inputs, we know what the output should be. Suppose we have the following data for prices of houses:
 
 \begin{figure}[ht]
 \centering
@@ -163,32 +163,32 @@ How do we represent $h$? We start with the simplest function possible and consid
     h_{\theta}(x) = \theta_0 + \theta_1 x.
     \label{linreg-eq:univar-hypothesis}
 \end{equation}
-This function assumes a linear relationship between the size of a house $x$ and its price $h_{\theta}(x)$. It is sometimes referred to as \textit{univariate linear regression}, because it is a function of a single variable (size of house) and is linear. We will come up with a learning algorithm that uses the training set to estimate the coefficients $\theta_0$ and $\theta_1$. With that at our disposal, we can predict the price of a house given its size. 
+This function assumes a linear relationship between the size of a house $x$ and its price $h_{\theta}(x)$. We will come up with a learning algorithm that uses the training set to estimate the coefficients $\theta_0$ and $\theta_1$. With that at our disposal, we can predict the price of a house given its size. This learning algorithm is sometimes referred to as \textit{univariate linear regression}, because $h_{\theta}(x)$ is a linear function of a single variable (size of house).
 
 % Cost function ----------------------------------------
 \subsection{Cost function}
-What values of $\theta_0$ and $\theta_1$ provide the best "fit" to our training? Let's start by establishing notation:
+What values of $\theta_0$ and $\theta_1$ provide the best fit to our data set? Let's start by establishing notation:
 \begin{itemize}
-    \item $m$: Number of training examples.
-    \item $x$: Input variable/feature (size of house).
-    \item $y$: Output variable/target variable (price of house).
-    \item $(x^{(i)}, y^{(i)})$: $i^{\text{th}}$ training example (size and price of a house in our training set).
+    \item $m$: number of training examples.
+    \item $x$: input variable/feature (size of house).
+    \item $y$: output/target variable (price of house).
+    \item $(x^{(i)}, y^{(i)})$: $i$th training example (size and price of $i$th house).
 \end{itemize}
 
-For a given house size $x^{(i)}$ in our training set, we know the correct house price $y^{(i)}$. It then makes sense to pick $\theta_0$ and $\theta_1$ so that $h_{\theta}(x^{(i)})$ is as close to $y^{(i)}$ as possible. Realistically, we cannot tune $\theta_0$ and $\theta_1$ so that $h_{\theta}(x^{(i)})=y^{(i)}$ for all examples, since we only have two parameters to play with but many more examples ($m \gg 2$) to fit. As a result, we need to strike a balance across all examples, so that the collective prediction error $|h_{\theta}(x) - y|$ on the training set is minimized. To that end, consider the following function, called the \textit{cost function}:
+For a given house size $x^{(i)}$ in our training set, we know the correct house price $y^{(i)}$. It then makes sense to pick $\theta_0$ and $\theta_1$ so that $h_{\theta}(x^{(i)})$ is as close to $y^{(i)}$ as possible. Realistically, we cannot always pick $\theta_0$ and $\theta_1$ so that $h_{\theta}(x^{(i)})=y^{(i)}$ for all examples, since we only have two parameters to tune, but many more examples to fit, i.e. $m \gg 2$. As a result, we need to strike a balance across all examples, so that the collective prediction error $|h_{\theta}(x) - y|$ on the training set is minimized. To that end, consider the following function, called the \textit{cost function}:
 
 \begin{align}
     J(\theta_0, \theta_1) &= \frac{1}{2m}\sum_{i=1}^{m}(h_{\theta}(x^{(i)}) - y^{(i)})^2
     \label{linreg-eq:costfunc}\\
-    &= \frac{1}{2m}\sum_{i=1}^{m}(\theta_0 + \theta_1 x^{(i)} - y^{(i)})^2
+    &= \frac{1}{2m}\sum_{i=1}^{m}(\theta_0 + \theta_1 x^{(i)} - y^{(i)})^2.
     \label{linreg-eq:univar-costfunc}
 \end{align}
-Given $\theta_0$ and $\theta_1$, it computes the sum of (squared) prediction errors across all training examples. (It also normalizes the sum by $2m$, but that's only for mathematical convenience.) We can think about $J$ as measuring the \textit{cost} of the model's predicted house prices deviating from actual house prices in the training set. So, it makes sense to pick the values of $\theta_0$ and $\theta_1$ that minimize $J$. Figure \ref{linreg-fig:costfunc} shows the correspondence between minimizing $J$ and getting a better fit to to the training set. 
+Given $\theta_0$ and $\theta_1$, it computes the sum of (squared) prediction errors across all training examples. (It also normalizes the sum by $2m$, but that's only for mathematical convenience.) The lower the value of $J$, the closer the model's prediction to the observed house prices in the training set. So it makes sense to pick $\theta_0$ and $\theta_1$ so that $J$ is minimized. Figure \ref{linreg-fig:costfunc} shows the correspondence between minimizing $J$ and getting a better fit to to the training set. 
 
 \begin{figure}[ht]
 \centering
 \includegraphics[scale=0.7]{images/lin_reg/costfunc.pdf}
-\caption{Correspondence between minimizing the cost function and getting a better fit to data. The following model is used to fit the data: $h_{\theta}(x) = \theta_1 x$. Black dots on the left show the training set. The right figure shows the cost function $J(\theta_1)$. Every dot on the right figure corresponds to a line of the same color on the left figure. We see that the closer $\theta_1$ is to $J$'s minimum, the better the fit to data is. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_reg/costfunction.ipynb}{here}.}
+\caption{Correspondence between minimizing the cost function and getting a better fit to data. The following model is used to fit the data: $h_{\theta}(x) = \theta_1 x$. Black dots on the left show the training set. The right figure shows the cost function $J(\theta_1)$. Every dot on the right figure corresponds to a line of the same color on the left figure. We see that the closer $\theta_1$ is to $J$'s minimum, the better the fit to data is. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/lin_reg/costfunction.ipynb}{here}.}
 \label{linreg-fig:costfunc}
 \end{figure}
 
@@ -227,6 +227,7 @@ We have solved the problem we posed in the beginning of this section. Given the 
 
 
 % Linear regression with multiple variables ============
+\newpage
 \section{Linear regression with multiple variables}
 In the previous section, we wanted to predict the price of a house as a function of its size. Of course, there are many more factors that could affect house prices:
 
@@ -248,26 +249,24 @@ In the previous section, we wanted to predict the price of a house as a function
 \end{tabularx}
 \label{linreg-tab:houseprice}
 \end{center}
-
-The independent variables $x_1-x_4$ (e.g. size of house, number of bedrooms, etc), which we think the output variable depends on, are called \textit{features}. In this section, we will generalize the univariate linear regression to incorporate more than just one feature.
+The independent variables $x_1-x_4$ (e.g. size of house, number of bedrooms, etc), which we think the output variable (house price) depends on, are called \textit{features}. In this section, we will generalize univariate linear regression to incorporate more than just one feature.
 
 
 % Model representation ---------------------------------
 \subsection{Model representation}
-We start by establishing notation:
-
-\begin{itemize}
-    \item $n$: Number of features.
-    \item $x^{(i)}_{j}$: Value of $j$th feature in the $i$th training example.
-\end{itemize}
-For data shows in Table \ref{linreg-tab:houseprice}: $n=4$, $x^{(2)}_3=2$, etc. We generalize the univariate hypothesis \eqref{linreg-eq:univar-hypothesis} to a multivariate one as follows:
+We generalize the univariate hypothesis \eqref{linreg-eq:univar-hypothesis} to a multivariate one as follows:
 \begin{equation}
     h_{\theta}(x) = \theta_0 + \theta_1x_1 + \theta_2x_2 + \cdots + \theta_nx_n.
     \label{linreg-eq:multi-hypothesis}
 \end{equation}
-Let's establish more notation, so we can write \eqref{linreg-eq:multi-hypothesis} in matrix form:
+There are now $n$ features, instead of just one. Let's establish notation, which will help us express \eqref{linreg-eq:multi-hypothesis} in matrix form:
+
 \begin{itemize}
-    \item $x_0 \equiv 1$. In other words, $x^{(i)}_0 = 1$ for all $i$.
+    \item $n$: number of features.
+    
+    \item $x^{(i)}_{j}$: value of $j$th feature for the $i$th training example.
+    
+    \item $x_0 \equiv 1$. In other words, $x^{(i)}_0 = 1$ for all examples $i$.
 
     \item $x=
         \begin{pmatrix}
@@ -299,6 +298,7 @@ Let's establish more notation, so we can write \eqref{linreg-eq:multi-hypothesis
         \in \mathbb{R}^{n+1}
     $ is the vector of parameters.
 \end{itemize}
+For data shows in Table \ref{linreg-tab:houseprice}: $n=4$, $x^{(2)}_3=2$, etc. 
 We have created a fictitious feature $x_0$ whose value is always set to $1$. This helps us rewrite the hypothesis function in matrix form:
 \begin{equation}
     h_{\theta}(x) = \theta^Tx.
@@ -348,9 +348,9 @@ With these definitions, we can show that $\theta^Tx^{(i)}$ is the $i$th componen
     \label{linreg-eq:multi-costfunc-mat}
 \end{align}
 
-Why do we care to write $J$ in matrix (or sometimes called \textit{vectorized}) form? One reason is parallelization: matrix multiplication is a highly parallelizable operation. Consider $C=AB$, where $A$ and $B$ are $1000,000 \times 5$ and $5 \times 1$ dimensional, respectively. All $1000,000$ components of $C$ can be computed in parallel, because they do not depend on one another. Most programming languages have highly optimized libraries for matrix multiplication. In the following Python \href{https://github.com/siavashaslanbeigi/machine_learning/blob/master/lin_reg/matrix.ipynb}{\color{blue} example}, it's shown that a vectorized implementation of \eqref{linreg-eq:multi-costfunc-mat} is more than two orders of magnitude faster than a for-loop implementation of \eqref{linreg-eq:multi-costfunc}. This is not all due to parallelization; overhead of the for-loops itself is probably a major factor. This should, however, serve to demonstrate the importance of vectorized implementations for large data sets.
+Why should we care about writing $J$ in matrix (or sometimes called \textit{vectorized}) form? One reason is parallelization: matrix multiplication is a highly parallelizable operation. Consider $C=AB$, where $A$ and $B$ are $1000,000 \times 5$ and $5 \times 1$ dimensional, respectively. All $1000,000$ components of $C$ can be computed in parallel, because they do not depend on one another. Most programming languages have highly optimized libraries for matrix multiplication. In the following Python \href{https://github.com/siavashaslanbeigi/machine_learning/blob/master/lin_reg/matrix.ipynb}{\color{blue} example}, it's shown that a vectorized implementation of \eqref{linreg-eq:multi-costfunc-mat} is more than two orders of magnitude faster than a for-loop implementation of \eqref{linreg-eq:multi-costfunc}. This is not all due to parallelization; overhead of the for-loop itself is probably a major factor. Nevertheless, this demonstrates the importance of vectorized implementations for large data sets.
 
-Writing expressions in matrix form also makes it easier to see when linear algebra results could be relevant. For instance, later in this section we will use the eigen-values and eigen-vectors of $X^TX$ to show that minimization of $J$ does not lead to a unique solution for $\theta$ when $m<n+1$.
+Writing expressions in matrix form also makes it easier to see when results from linear algebra could be relevant. For instance, later in this section we will use the eigenvalues/eigenvectors of $X^TX$ to show that minimization of $J$ does not lead to a unique solution for $\theta$ when $m<n+1$.
 
 
 % Normal equation --------------------------------------
@@ -366,7 +366,7 @@ or equivalently
 \begin{equation}
     \nabla_{\theta} J = \frac{1}{m}X^T(X\theta - Y).
 \end{equation}
-As a sanity check, note that the dimensions of the two sides match: $\nabla_{\theta} J$ is an ($n+1$)-dimensional vector, and $X^T(X\theta - Y)$ is a multiplication between a $(n+1) \times m$ and $m \times 1$ matrix, which again is an ($n+1$)-dimensional vector. Setting the gradient to zero, we arrive at the value of $\theta$ that minimizes:
+As a sanity check, note that the dimensions of the two sides match: $\nabla_{\theta} J$ is an ($n+1$)-dimensional vector, and $X^T(X\theta - Y)$ is a multiplication between an $(n+1) \times m$ matrix and an $m$-dimensional vector, which again is an ($n+1$)-dimensional vector. Setting the gradient to zero, we arrive at the value of $\theta$ that minimizes $J$:
 \begin{equation}
     \theta = \left(X^TX\right)^{-1}X^TY.
     \label{linreg-eq:normal}
@@ -378,7 +378,7 @@ So there we have it. Given the training set in the form of the design matrix $X$
 
 % When the normal equation fails -----------------------
 \subsection{When the normal equation fails}
-The normal equation \eqref{linreg-eq:normal} can only work if $X^TX$ is invertible. Let's look at scenarios where this is not the case, and understand the reasons intuitively and mathematically. Consider the following design matrix, constructed using the first two examples in table \ref{linreg-tab:houseprice}:
+The normal equation \eqref{linreg-eq:normal} can only work if $X^TX$ is invertible. Let's look at scenarios where this is not the case, and understand the reasons intuitively and mathematically. Consider the following design matrix, constructed using the first two examples in Table \ref{linreg-tab:houseprice}:
 \begin{equation}
     X =
     \begin{pmatrix}
@@ -387,7 +387,7 @@ The normal equation \eqref{linreg-eq:normal} can only work if $X^TX$ is invertib
     \end{pmatrix}.
     \label{linreg-eq:design-mat-noninvert}
 \end{equation}
-It can be checked that $\text{det}(X^TX)=0$. Therefore, $X^TX$ is not invertible. Is there something special about this data set? As it turns out, this result holds no matter how we tweak the numbers. This may seem a bit surprising. However, let's consider what it would've meant if $X^TX$ was invertible. The dataset contains five features (including $x_0$), so the normal equation will solve for five parameters $\theta_0,\theta_1\dots\theta_4$, but using only two examples. In short, there are two equations and five unknowns. There's not enough data to fix the parameters of the model, which manifests itself through the non-invertibility of $X^TX$.
+It can be checked that $\text{det}(X^TX)=0$. Therefore, $X^TX$ is not invertible. Is there something special about this dataset? As it turns out, this result holds no matter how we tweak the numbers. This may seem a bit surprising. However, let's consider what it would've meant if $X^TX$ were invertible. The dataset contains five features (including $x_0$), so the normal equation will solve for five parameters $\theta_0,\theta_1\dots\theta_4$, but using only two examples. In short, there are two equations and five unknowns. There's not enough data to fix the parameters of the model.This in turn manifests itself through the non-invertibility of $X^TX$.
 
 More generally, we should expect that $X^TX$ is not invertible when $m<n+1$, i.e. when there are fewer examples than features.
 Let's prove this. We will make use of the Singular-Value Decomposition (SVD), which states that any matrix $m\times n$ can be written as
@@ -398,7 +398,7 @@ where:
 \begin{itemize}
     \item $U$ is an $m\times m$ matrix which satisfies $U^TU=UU^T=1_m$, where $1_m$ is the $m$-dimensional identity matrix.
     \item $V$ is an $n\times n$ matrix which satisfies $V^TV=VV^T=1_n$, where $1_n$ is the $n$-dimensional identity matrix.
-    \item $D$ is an $m\times n$ matrix with zero elements everywhere except $D_{ii}\ge0$ where $i=1,\dots,\text{min}(m, n)$. So $D$ is diagonal and has at most $\text{min}(m, n)$ elements on the diagonal. These elements are called the singular values of $X$.
+    \item $D$ is an $m\times n$ matrix with zero elements everywhere except $D_{ii}\ge0$ where $i=1,\dots,\text{min}(m, n)$. So $D$ is diagonal and has at most $\text{min}(m, n)$ elements on the diagonal. These elements are called the singular values of $A$.
 \end{itemize}
 Appendix \ref{section:svd} provides a detailed explanation of SVD and its geometric meaning. Consider now the SVD of the design matrix $X=UDV^T$ (remember that $X$ is $m\times (n+1)$ dimensional, so $D$ and $V$ are $m\times (n+1)$ and $(n+1)\times (n+1)$ dimensional, respectively):
 \begin{align*}
@@ -450,24 +450,25 @@ It can be checked that $\text{det}(X^TX)=0$. In fact, it's more subtle than that
 This looks like a perfectly innocent dataset. What's going on?
 The reason is that $x_2$ is a linear combination of $x_0$ and $x_1$: $x_2 = x_0 + 0.5 x_1$.
 
-In summary, if we find that $X^TX$ is not invertible, we can look for the following in the dataset:
+In summary, if $X^TX$ is not invertible, we can look for the following in the dataset:
 \begin{itemize}
     \item Are there more unique examples than features? Of course, if possible, we should aim for many more examples than features, maybe $m\gtrsim 10n$ to be safe.
     \item Are there any redundant features? This is harder to check, because one needs to determine which feature is a linear combination of the others.
 \end{itemize}
 
-% When the normal equation is infeasible ===============
+% When the normal equation is infeasible ---------------
 \subsection{When the normal equation is infeasible}
+\label{section:normal-eq-infeasible}
 Using the normal equation requires inverting $X^TX$, which is an $(n+1)\times (n+1)$ matrix. When $n$ is large, this may not be feasible in practice. Matrix inversion is typically an $\mathcal{O}(n^3)$ operation. This is demonstrated in Figure  \ref{linreg-fig:inv-time}, where a matrix inversion routine in Python is applied to random matrices with different dimensions.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[scale=0.7]{images/lin_reg/inv_time.pdf}
-\caption{How matrix inversion scales with dimension. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_reg/inv_time.ipynb}{\color{blue} here}.}
+\caption{How matrix inversion scales with dimension. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/lin_reg/inv_time.ipynb}{\color{blue} here}.}
 \label{linreg-fig:inv-time}
 \end{figure}
 
-If inverting $X^TX$ is not possible in practice, how else can we estimate the parameters $\theta$? Remember we obtained the normal equation by minimizing the cost function $J(\theta)$ (see \eqref{linreg-eq:multi-costfunc} or \eqref{linreg-eq:multi-costfunc-mat}). In the next section we will describe an algorithm, called Gradient Descent, which directly minimizes $J(\theta)$ and is faster for large values of $n$. How large is too large for the normal equation? About $n\simeq10000$. That seems like an unreasonably large number of features. For instance, it's hard to imagine there could be $10000$ features relevant for predicting house prices. Consider, though, making predictions based on images. If every pixel is considered a feature, which is often the case for image recognition problems, having $10000$ features is equivalent to processing images that are only $100\text{px}\times100\text{px}$; not large by any means!
+If inverting $X^TX$ is not possible in practice, how else can we estimate the parameters $\theta$? Remember we obtained the normal equation by minimizing the cost function $J(\theta)$ (see \eqref{linreg-eq:multi-costfunc} or \eqref{linreg-eq:multi-costfunc-mat}). In the next section we will describe an algorithm, called Gradient Descent, which directly minimizes $J(\theta)$ and is faster for large values of $n$. How large is too large for the normal equation? About $n\simeq10,000$. That seems like an unreasonably large number of features. For instance, it's hard to imagine there could be $10,000$ features relevant for predicting house prices. Consider, though, making predictions based on images. If every pixel is considered a feature, which is often the case for image recognition problems, having $10,000$ features is equivalent to processing images that are only $100\text{px}\times100\text{px}$; not large by any means!
 
 
 % Polynomial Regression --------------------------------
@@ -481,33 +482,35 @@ Can we use the machinery of linear regression to estimate the coefficients $\the
 \begin{equation}
     x_1 = x, \qquad x_2 = x^2, \qquad x_3 = x^3.
 \end{equation}
-using which \eqref{linreg-eq:poly-example} takes the form \eqref{linreg-eq:multi-hypothesis}, or equivalently \eqref{linreg-eq:multi-hypothesis-mat} where the feature vector is given by
-\begin{equation}
-    x=
+using which \eqref{linreg-eq:poly-example} takes the form \eqref{linreg-eq:multi-hypothesis}, or equivalently \eqref{linreg-eq:multi-hypothesis-mat} where the feature vector is given by:
+\begin{equation*}
     \begin{pmatrix}
         1 \\
         x \\
         x^2 \\
         x^3
     \end{pmatrix}.
-\end{equation}
+\end{equation*}
 By transforming non-linear terms into new features, we can carry out linear regression as prescribed in the previous section. This trick can be used for far more complicated models, such as
 \begin{equation}
     h_{\theta}(x) = \theta_0 + \theta_1 x^2 e^{-2x} + \theta_2 \sqrt{x}.
 \end{equation}
-Given that we can treat such complicated functions, what's with the word \textit{linear} in linear regression? It refers to the parameters $\theta$ and not the features. An example of a model that cannot be treated with linear regression is $h_{\theta}(x) = e^{-\theta x}$, because it's not a linear function of $\theta$.
+Given that we can treat such complicated functions, what's with the word \textit{linear} in linear regression? It refers to the parameters $\theta$. An example of a model that cannot be treated using linear regression is $h_{\theta}(x) = e^{-\theta x}$, because it's not a linear function of $\theta$.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[scale=0.7]{images/lin_reg/poly-data.pdf}
-\caption{Non-linear relationship between house price and size. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_reg/poly.ipynb}{\color{blue} here}.}
+\caption{Non-linear relationship between house price and size. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/lin_reg/poly.ipynb}{\color{blue} here}.}
 \label{linreg-fig:poly-data}
 \end{figure}
 
-\subsection{A probabilistic view}
+
+
+% Probabilistic view -----------------------------------
+\subsection{Probabilistic view}
 Suppose we look at houses with similar characteristics such as number of bedrooms, number of floors, age, etc. Even though they are similar, they will likely not have the exact same price. For instance, one owner may be under time pressure and is willing to sell below market price. We should always expect a certain degree of randomness that our features cannot capture. We can, however, hope to design a model that makes the right predictions \textit{on average}. This suggests a probabilistic approach for modeling. For a given set of features $x$, we can think of the house price $y$ as a random variable with a certain probability distribution, whose mean is given by the hypothesis $h_{\theta}(x)$.
 
-For simplicity, let's say $y$ is a normal distribution with standard deviation $\sigma$ and that all observations are independent. What is the probability of observing the training set $(x^{(1)}, y^{(1)}), \dots, (x^{(m)}, y^{(m)})$, assuming that our hypothesis $h_{\theta}(x)$ is correct on average? The probability that we observe a house with features $x^{(i)}$ and price $y^{(i)}$ is
+For simplicity, let's say $y$ has a normal distribution with standard deviation $\sigma$, and that all observations are independent. What is the probability of observing the training set $(x^{(1)}, y^{(1)}), \dots, (x^{(m)}, y^{(m)})$, assuming that our hypothesis $h_{\theta}(x)$ is correct on average? The probability that we observe a house with features $x^{(i)}$ and price $y^{(i)}$ is
 \begin{equation}
     P^{(i)} = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left[-\frac{(y^{(i)} - h_{\theta}(x^{(i)}))^2}{2\sigma^2}\right].
 \end{equation}
@@ -516,13 +519,13 @@ Since we're assuming all observations are independent, the probability of observ
     P = \prod_{i=1}^mP^{(i)} = \frac{1}{(2\pi\sigma^2)^{\frac{m}{2}}}\exp\left[-\sum_{i=1}^{m}\frac{(y^{(i)} - h_{\theta}(x^{(i)}))^2}{2\sigma^2}\right].
     \label{linreg-eq:mle-simple1}
 \end{equation}
-The quantity in the exponent can be rewritten in terms of the cost function
-(see \eqref{linreg-eq:multi-costfunc})
+The quantity in the exponent can be rewritten in terms of $J(\theta)$
+(see \eqref{linreg-eq:multi-costfunc}):
 \begin{equation}
     P = \frac{1}{(2\pi\sigma^2)^{\frac{m}{2}}}\exp\left[-\frac{mJ(\theta)}{\sigma^2}\right].
     \label{linreg-eq:mle-simple2}
 \end{equation}
-Interesting! The probability of observing the training set can be written in terms of the cost function. In fact, the parameters $\theta$ that maximize the probability of observing the training set are precisely those that minimize the cost function $J(\theta)$. Picking the parameters of the model to maximize the probability of observations is called \textit{maximum likelihood estimation}. Before we picked the cost function based on heuristic arguments; now we see there's a deeper principle from which it can be arrived at.
+Interesting! The probability of observing the training set can be written in terms of the cost function. In fact, the parameters $\theta$ that maximize the probability of observing the training set are precisely those that minimize the cost function $J(\theta)$. Picking the parameters of a model to maximize the probability of observing the dataset is called \textit{maximum likelihood estimation}. Before we picked the cost function based on heuristic arguments; now we see there's a deeper principle from which it can be arrived at.
 
 Note that going from \eqref{linreg-eq:mle-simple1} to \eqref{linreg-eq:mle-simple2} assumes all observations are independent and have the same standard deviation $\sigma$. If every $y^{(i)}$ has its own standard deviation $\sigma_i$, the following cost function should be minimized:
 \begin{equation}
@@ -555,9 +558,57 @@ Figure \ref{linreg-fig:yerror} shows an example of using \eqref{linreg-eq:costfu
 \begin{figure}[ht]
 \centering
 \includegraphics[scale=0.7]{images/lin_reg/yerror.pdf}
-\caption{Fitting house prices when d$y^{(i)}$ are drawn from different normal distributions. Blue dots show the mean of $y^{(i)}$ and the error bars show the standard deviation. Black dots are sampled house prices. The red fit uses \eqref{linreg-eq:costfunc-mat}, while the green fit uses \eqref{linreg-eq:costfunc-mat-err}. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_reg/yerror.ipynb}{\color{blue} here}.}
+\caption{Fitting house prices when $y^{(i)}$ are drawn from different normal distributions. Blue dots show the mean of $y^{(i)}$ and the error bars show the standard deviation. Black dots are sampled house prices. The red fit uses \eqref{linreg-eq:costfunc-mat}, while the green fit uses \eqref{linreg-eq:costfunc-mat-err}. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/lin_reg/yerror.ipynb}{\color{blue} here}.}
 \label{linreg-fig:yerror}
 \end{figure}
+
+
+% Gradient Descent =====================================
+\newpage
+\section{Gradient Descent}
+We saw in the previous section that training linear regression involves minimizing a cost function $J(\theta_1,\dots,\theta_N)$. In the case of linear regression, we were able to carry out the minimization analytically and arrive at the normal equation. That is only possible because the hypothesis function $h_{\theta}(x)$ is linear in the fitting parameters $\theta_1,\dots,\theta_N$, which is certainly not the case for most other learning algorithms.
+Even for linear regression, as we explained in section \ref{section:normal-eq-infeasible}, the normal equation becomes infeasible when there are a large number of features. Therefore, we need an algorithm for minimizing a generic cost function $J(\theta_1,\dots,\theta_N)$. Gradient descent is one such algorithm. To make the notation simpler, we will use $\theta$ to denote the vectors of parameters $\theta_1,\dots,\theta_N$ and simply write the cost function as $J(\theta)$.
+
+The general idea of gradient descent is to start at some value of $\theta$, then keep changing $\theta$ to reduce $J$ until we hopefully end up at the minimum. How do we change $\theta$? One way is to look for the direction along which $J$ decreases the fastest locally, and take a step in that direction. This makes sense, since our goal is to minimize $J$ and we want to arrive at the minimum as quickly as possible. What \textit{is} the direction in which $J$ decreases the fastest? The answer turns out to be the opposite direction of the gradient $\nabla J$, which is defined as
+\begin{equation}
+    \nabla J =
+    \begin{pmatrix}
+        \frac{\partial J}{\partial \theta_1}\\
+        \vdots\\
+        \frac{\partial J}{\partial \theta_N}
+    \end{pmatrix}.
+\end{equation}
+This is a general result from calculus, but the proof isn't very involved, so let's go through it. Consider a vector $n$ and its corresponding unit vector $\hat{n}=n/\sqrt{n\cdot n}$. The rate of change of $J$ at point $\theta$ along $\hat{n}$ is
+\begin{equation*}
+    \sum_{j=1}^N\hat{n}_j\frac{\partial J}{\partial\theta_j} = n \cdot \nabla J.
+\end{equation*}
+(You should convince yourself of this, by considering $J(\theta_1+\epsilon \hat{n}_1, \dots, \theta_N+\epsilon \hat{n}_N)$.) We'd like to find the direction $\hat{n}$ along which the rate of change of $J$ is the highest. This is equivalent to minimizing the function
+\begin{equation*}
+    f(n) = \sum_{j=1}^N\frac{n_j}{\sqrt{n\cdot n}}\frac{\partial J}{\partial\theta_j} = \frac{n\cdot \nabla J}{\sqrt{n\cdot n}}.
+\end{equation*}
+Let's compute $\nabla f$:
+\begin{align}
+    \frac{\partial f}{\partial n_i} &= \sum_{j=1}^N\left(\frac{\delta_{ij}}{\sqrt{n\cdot n}}-\frac{n_in_j}{(n\cdot n)^{3/2}}\right)\frac{\partial J}{\partial\theta_j}\\
+    &= \frac{1}{\sqrt{n\cdot n}}\left(\frac{\partial J}{\partial\theta_i}-\frac{n\cdot \nabla J}{n\cdot n}n_i\right).
+\end{align}
+It can be checked that $\nabla f = 0$ when $n=\pm \nabla J$, which means either $+\nabla J$ or $-\nabla J$ minimizes $f$. To figure out which one, we plug both back into $f$:
+\begin{equation*}
+    f(\pm \nabla J) = \pm \sqrt{\nabla J \cdot \nabla J},
+\end{equation*}
+which tells us $n=-\nabla J$ is the direction along which $J$ decreases the fastest.
+
+One step of gradient descent then involves updating $\theta$ as follows:
+\begin{equation}
+    \theta := \theta - \alpha \nabla J,
+\end{equation}
+where $\alpha > 0$ is called the \textit{learning rate} and determines how long a step we take along the direction $-\nabla J$. Concretely, this is how gradient descent works:
+\begin{enumerate}
+    \item Start from some value $\theta^{(0)}$ and compute $\nabla J(\theta^{(0)})$.
+    \item $\theta^{(1)}=\theta^{(0)}-\alpha\nabla J(\theta^{(0)})$.
+    \item $\theta^{(2)}=\theta^{(1)}-\alpha\nabla J(\theta^{(1)})$.
+    \item $\dots$
+\end{enumerate}
+When do we stop? Note that if $\theta^{(n)}$ is a local or global minima, where $\nabla J(\theta^{(n)})=0$, gradient would not make any progress at at all, i.e. $\theta^{(n+1)}=\theta^{(n)}$. Since it's not likely we'll end up exactly on a minima, we can place a tolerance on the difference between $\theta^{(n+1)}$ and $\theta^{(n)}$, perhaps something like $|\theta^{(n+1)} - \theta^{(n)}|$
 
 
 \newpage
@@ -719,7 +770,7 @@ Finally, Figure \ref{linalg-fig:svd-u} shows the application of $U$ after $DV^T$
         \caption{Third step: applying $U$ to to $DV^Tu_x$ (light red) and $DV^Tu_y$ (light blue). $UDV^Tu_x$ and $UDV^Tu_y$ are the darker red and blue arrows, respectively.}
         \label{linalg-fig:svd-u}
     \end{subfigure}
-    \caption{Applying SVD of $M$ step by step. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes_supp/blob/master/lin_alg/svd.ipynb}{\color{blue} here}.}
+    \caption{Applying SVD of $M$ step by step. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/lin_alg/svd.ipynb}{\color{blue} here}.}
     \label{linalg-fig:svd}
 \end{figure}
 
