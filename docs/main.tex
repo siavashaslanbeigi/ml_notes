@@ -364,7 +364,17 @@ Just like the univariate case, $J$ is a quadratic function of $\theta_0, \theta_
 \end{align}
 or equivalently
 \begin{equation}
-    \nabla_{\theta} J = \frac{1}{m}X^T(X\theta - Y).
+    \nabla J = \frac{1}{m}X^T(X\theta - Y),
+\end{equation}
+where $\nabla J$ is the gradient of $J$:
+\begin{equation}
+    \nabla J =
+    \begin{pmatrix}
+        \frac{\partial J}{\partial \theta_0}\\
+        \frac{\partial J}{\partial \theta_1}\\
+        \vdots\\
+        \frac{\partial J}{\partial \theta_N}
+    \end{pmatrix}.
 \end{equation}
 As a sanity check, note that the dimensions of the two sides match: $\nabla_{\theta} J$ is an ($n+1$)-dimensional vector, and $X^T(X\theta - Y)$ is a multiplication between an $(n+1) \times m$ matrix and an $m$-dimensional vector, which again is an ($n+1$)-dimensional vector. Setting the gradient to zero, we arrive at the value of $\theta$ that minimizes $J$:
 \begin{equation}
@@ -566,36 +576,18 @@ Figure \ref{linreg-fig:yerror} shows an example of using \eqref{linreg-eq:costfu
 % Gradient Descent =====================================
 \newpage
 \section{Gradient Descent}
-We saw in the previous section that training linear regression involves minimizing a cost function $J(\theta_1,\dots,\theta_N)$. In the case of linear regression, we were able to carry out the minimization analytically and arrive at the normal equation. That is only possible because the hypothesis function $h_{\theta}(x)$ is linear in the fitting parameters $\theta_1,\dots,\theta_N$, which is certainly not the case for most other learning algorithms.
+We saw in the previous section that training linear regression involves minimizing a cost function $J(\theta_1,\dots,\theta_N)$. We were able to carry out the minimization analytically and arrive at the normal equation. That is only possible because the hypothesis function $h_{\theta}(x)$ is linear in the fitting parameters $\theta_1,\dots,\theta_N$, which is not the case for most other learning algorithms.
 Even for linear regression, as we explained in section \ref{section:normal-eq-infeasible}, the normal equation becomes infeasible when there are a large number of features. Therefore, we need an algorithm for minimizing a generic cost function $J(\theta_1,\dots,\theta_N)$. Gradient descent is one such algorithm. To make the notation simpler, we will use $\theta$ to denote the vectors of parameters $\theta_1,\dots,\theta_N$ and simply write the cost function as $J(\theta)$.
 
-The general idea of gradient descent is to start at some value of $\theta$, then keep changing $\theta$ to reduce $J$ until we hopefully end up at the minimum. How do we change $\theta$? One way is to look for the direction along which $J$ decreases the fastest locally, and take a step in that direction. This makes sense, since our goal is to minimize $J$ and we want to arrive at the minimum as quickly as possible. What \textit{is} the direction in which $J$ decreases the fastest? The answer turns out to be the opposite direction of the gradient $\nabla J$, which is defined as
+The general idea of gradient descent is to start at some value of $\theta$, then keep changing $\theta$ to reduce $J$ until we hopefully end up at the minimum. How do we change $\theta$? One way is to look for the direction along which $J$ decreases the fastest locally, and take a small step in that direction. This makes sense, since our goal is to minimize $J$ and we want to arrive at the minimum as quickly as possible. What \textit{is} the direction in which $J$ decreases the fastest? The answer turns out to be the opposite direction of the gradient $\nabla J$. To see why this makes sense, consider the Taylor expansion of $J$ about $\theta$:
 \begin{equation}
-    \nabla J =
-    \begin{pmatrix}
-        \frac{\partial J}{\partial \theta_1}\\
-        \vdots\\
-        \frac{\partial J}{\partial \theta_N}
-    \end{pmatrix}.
+    J(\theta + \delta\theta) =  J(\theta) + \nabla J \cdot \delta\theta + \cdots.
 \end{equation}
-This is a general result from calculus, but the proof isn't very involved, so let's go through it. Consider a vector $n$ and its corresponding unit vector $\hat{n}=n/\sqrt{n\cdot n}$. The rate of change of $J$ at point $\theta$ along $\hat{n}$ is
-\begin{equation*}
-    \sum_{j=1}^N\hat{n}_j\frac{\partial J}{\partial\theta_j} = n \cdot \nabla J.
-\end{equation*}
-(You should convince yourself of this, by considering $J(\theta_1+\epsilon \hat{n}_1, \dots, \theta_N+\epsilon \hat{n}_N)$.) We'd like to find the direction $\hat{n}$ along which the rate of change of $J$ is the highest. This is equivalent to minimizing the function
-\begin{equation*}
-    f(n) = \sum_{j=1}^N\frac{n_j}{\sqrt{n\cdot n}}\frac{\partial J}{\partial\theta_j} = \frac{n\cdot \nabla J}{\sqrt{n\cdot n}}.
-\end{equation*}
-Let's compute $\nabla f$:
-\begin{align}
-    \frac{\partial f}{\partial n_i} &= \sum_{j=1}^N\left(\frac{\delta_{ij}}{\sqrt{n\cdot n}}-\frac{n_in_j}{(n\cdot n)^{3/2}}\right)\frac{\partial J}{\partial\theta_j}\\
-    &= \frac{1}{\sqrt{n\cdot n}}\left(\frac{\partial J}{\partial\theta_i}-\frac{n\cdot \nabla J}{n\cdot n}n_i\right).
-\end{align}
-It can be checked that $\nabla f = 0$ when $n=\pm \nabla J$, which means either $+\nabla J$ or $-\nabla J$ minimizes $f$. To figure out which one, we plug both back into $f$:
-\begin{equation*}
-    f(\pm \nabla J) = \pm \sqrt{\nabla J \cdot \nabla J},
-\end{equation*}
-which tells us $n=-\nabla J$ is the direction along which $J$ decreases the fastest.
+If we make a small move in the opposite direction of the gradient, i.e. $\delta\theta = -\epsilon \nabla J$ where $\epsilon$ is a sufficiently small positive number, the cost function is guaranteed to decrease:
+\begin{equation}
+   \Delta J = J(\theta + \delta\theta) -  J(\theta) \approx -\epsilon \nabla J \cdot \nabla J < 0.
+\end{equation}
+This doesn't quite prove that $J$ decreases the \textit{fastest} in this direction. To see why that is, note that first-order changes in $J$ are given by the inner product of the vectors $\nabla J$ and $\delta \theta$: $\Delta J \approx \nabla J \cdot \delta\theta$. If we constrain the magnitude of $\delta \theta$, its inner product with $\nabla J$ is most negative when it is pointing in the opposite direction of $\nabla J$. A formal proof of this result is presented in Appendix \ref{app-section:gd}.
 
 One step of gradient descent then involves updating $\theta$ as follows:
 \begin{equation}
@@ -608,10 +600,84 @@ where $\alpha > 0$ is called the \textit{learning rate} and determines how long 
     \item $\theta^{(2)}=\theta^{(1)}-\alpha\nabla J(\theta^{(1)})$.
     \item $\dots$
 \end{enumerate}
-When do we stop? Note that if $\theta^{(n)}$ is a local or global minima, where $\nabla J(\theta^{(n)})=0$, gradient would not make any progress at at all, i.e. $\theta^{(n+1)}=\theta^{(n)}$. Since it's not likely we'll end up exactly on a minima, we can place a tolerance on the difference between $\theta^{(n+1)}$ and $\theta^{(n)}$, perhaps something like $|\theta^{(n+1)} - \theta^{(n)}|$
+
+Figure \ref{graddes-fig:gd2} demonstrates how gradient descent works for a simple function: $J(\theta)=\theta^2$. With an appropriate learning rate $\alpha=0.1$ and starting point $\theta_0=2$, gradient descent is able to find the minimum after about $20$ steps. Even though the learning rate is constant, the steps keep getting smaller and smaller. The reason is that the closer to the minimum we get, the smaller the gradient becomes: from $\theta = 2$ we would take a step of size $-\lambda J'(2) = -0.4$, while from $\theta = 0.5$ the step size would only be $-0.1$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.7]{images/grad_des/gd2.pdf}
+\caption{Gradient descent applied to $J(\theta)=\theta^2$. The starting and points are shown by red and green dots, respectively. Code used to generate this plot can be found. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
+\label{graddes-fig:gd2}
+\end{figure}
+
+We should be careful not to make $\alpha$ too small, because gradient descent will take a lot longer to converge. This is demonstrated in Figure \ref{graddes-fig:gd2-slow}.
+We should also be careful not to make $\alpha$ too large, because gradient descent 
+might not converge at all. This demonstrated in Figure \ref{graddes-fig:gd2-overshoot}, where $\theta_0=0.5$ and $\alpha = 1.1$. The first step overshoots the minimum $\theta=0$ and ends up at $\theta=-0.6$, where the gradient is even higher. This keeps on repeating and the steps keeps getting larger and larger. 
+
+\begin{figure}[ht]
+    \begin{subfigure}[ht]{\linewidth}
+        \centering
+        \includegraphics[scale=0.45]{images/grad_des/gd2_slow.pdf}
+        \caption{If $\alpha$ is too small, gradient descent will take long to converge.}
+        \label{graddes-fig:gd2-slow}
+    \end{subfigure}%
+    
+    \begin{subfigure}[ht]{\linewidth}
+        \centering
+        \includegraphics[scale=0.45]{images/grad_des/gd2_overshoot.pdf}
+        \caption{If $\alpha$ is too large, gradient descent will not converge.}
+        \label{graddes-fig:gd2-overshoot}
+    \end{subfigure}%
+    
+    \caption{Impact of the learning rate on convergence. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
+\end{figure}
+
+In order to make sure gradient descent is not diverging or converging too slowly, we can plot the cost function $J$ after every step. With a sufficiently small value of $\alpha$, $J$ should decrease at every step. If $J$ is decreasing too slowly, we can try increasing $\alpha$. If $J$ is increasing, we can try decreasing $J$. 
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.7]{images/grad_des/gd2_progress.pdf}
+\caption{Tracking the progress of gradient descent applied to  $J(\theta)=\theta^2$. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
+\label{graddes-fig:gd2-progress}
+\end{figure}
+
+Let's now look at a more complicated function:
+\begin{equation}
+   J(\theta) = \frac{12}{5} \theta^4 + \frac{4}{5} \theta^3 - \frac{18}{5} \theta^2 + 2.
+   \label{graddes-eq:j4}
+\end{equation}
+This function has a global minimum at $\theta=-1$, and a local one at $\theta=+3/4$. Which one will gradient descent converge to? That depends on the starting point. This is demonstrated in Figure \ref{graddes-fig:gd4-init}.
+
+\begin{figure}[ht]
+    \begin{subfigure}[ht]{\linewidth}
+        \centering
+        \includegraphics[scale=0.45]{images/grad_des/gd4_local.pdf}
+        \caption{Converging to the local minimum.}
+        \label{graddes-fig:gd4-local}
+    \end{subfigure}%
+    
+    \begin{subfigure}[ht]{\linewidth}
+        \centering
+        \includegraphics[scale=0.45]{images/grad_des/gd4_global.pdf}
+        \caption{Converging to the global minimum.}
+        \label{graddes-fig:gd4-global}
+    \end{subfigure}%
+    
+    \caption{Impact of initialization on convergence. Cost function is given by \eqref{graddes-eq:j4}. Number of gradient descent steps in each case is 30. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
+    \label{graddes-fig:gd4-init}
+\end{figure}
+
+Another interesting feature of \eqref{graddes-eq:j4} is that it has a local maximum at $\theta=0$. If we initialize gradient descent at $\theta=0$, it will not make any progress at all, since $J'(0)=0$. Even if we initialize close to the local maximum, progress will be very slow. This is because $J'(\theta)$ is small and gradient descent will take small steps. This is shown in Figure \ref{graddes-fig:gd2-slow}, where the learning rate is kept the same as that in Figure \ref{graddes-fig:gd4-init}, but the starting point is changed to $\theta=-0.01$ (so just to the left of the local maximum), and number of iterations is increased by a factor of 3. Even with so many more steps, gradient descent is not able to converge to the global minimum.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.7]{images/grad_des/gd4_slow.pdf}
+\caption{Gradient descent takes very small steps in regions where the gradient is small. Cost function is given by \eqref{graddes-eq:j4}. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
+\label{graddes-fig:gd4-slow}
+\end{figure}
 
 
-\newpage
+\clearpage
 \appendix
 % Linear Algebra =======================================
 \section{Linear Algebra}
@@ -865,5 +931,28 @@ Finally:
     & = M_{ij}.
 \end{align*}
 The second equality uses the definitions of $W$, $V$, $D$, and the fact that $D_{ij}=0$ for all $i,j>k$. The fourth equality uses \eqref{svd-eq:w}, and the fifth equality follows from the fact that $Mv^{(i)}=0$ for all $i>k$ (see \eqref{svd-lemma:mv}).
+
+
+% Gradient Descent =====================================
+\section{Gradient Descent}
+\label{app-section:gd}
+Here we present a formal proof that the cost function $J$ decreases (locally) the fastest in the opposite direction of the gradient $\nabla J$. Consider a vector $n$ and its corresponding unit vector $\hat{n}=n/\sqrt{n\cdot n}$. The rate of change of $J$ at point $\theta$ along $\hat{n}$ is
+\begin{equation*}
+    \sum_{j=1}^N\hat{n}_j\frac{\partial J}{\partial\theta_j} = n \cdot \nabla J.
+\end{equation*}
+(You should convince yourself of this, by considering $J(\theta_1+\epsilon \hat{n}_1, \dots, \theta_N+\epsilon \hat{n}_N)$.) We'd like to find the direction $\hat{n}$ along which the rate of change of $J$ is the highest. This is equivalent to minimizing the function
+\begin{equation*}
+    f(n) = \sum_{j=1}^N\frac{n_j}{\sqrt{n\cdot n}}\frac{\partial J}{\partial\theta_j} = \frac{n\cdot \nabla J}{\sqrt{n\cdot n}}.
+\end{equation*}
+Let's compute $\nabla f$:
+\begin{align}
+    \frac{\partial f}{\partial n_i} &= \sum_{j=1}^N\left(\frac{\delta_{ij}}{\sqrt{n\cdot n}}-\frac{n_in_j}{(n\cdot n)^{3/2}}\right)\frac{\partial J}{\partial\theta_j}\\
+    &= \frac{1}{\sqrt{n\cdot n}}\left(\frac{\partial J}{\partial\theta_i}-\frac{n\cdot \nabla J}{n\cdot n}n_i\right).
+\end{align}
+It can be checked that $\nabla f = 0$ when $n=\pm \nabla J$, which means either $+\nabla J$ or $-\nabla J$ minimizes $f$. To figure out which one, we plug both back into $f$:
+\begin{equation*}
+    f(\pm \nabla J) = \pm \sqrt{\nabla J \cdot \nabla J},
+\end{equation*}
+which tells us $n=-\nabla J$ is the direction along which $J$ decreases the fastest.
 
 \end{document}
