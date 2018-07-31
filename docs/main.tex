@@ -600,19 +600,19 @@ where $\alpha > 0$ is called the \textit{learning rate} and determines how long 
     \item $\theta^{(2)}=\theta^{(1)}-\alpha\nabla J(\theta^{(1)})$.
     \item $\dots$
 \end{enumerate}
-
-Figure \ref{graddes-fig:gd2} demonstrates how gradient descent works for a simple function: $J(\theta)=\theta^2$. With an appropriate learning rate $\alpha=0.1$ and starting point $\theta_0=2$, gradient descent is able to find the minimum after about $20$ steps. Even though the learning rate is constant, the steps keep getting smaller and smaller. The reason is that the closer to the minimum we get, the smaller the gradient becomes: from $\theta = 2$ we would take a step of size $-\lambda J'(2) = -0.4$, while from $\theta = 0.5$ the step size would only be $-0.1$.
+Figure \ref{graddes-fig:gd2} demonstrates this using a simple cost function: $J(\theta)=\theta^2$. With an appropriate learning rate ($\alpha=0.1$) and starting point ($\theta_0=2$), gradient descent is able to find the minimum after about $20$ steps. Even though the learning rate is constant, the steps keep getting smaller. The reason is that the closer to the minimum we get, the smaller the gradient becomes: from $\theta = 2$ we would take a step of size $-\lambda J'(2) = -0.4$, while from $\theta = 0.5$ the step size would only be $-0.1$.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[scale=0.7]{images/grad_des/gd2.pdf}
-\caption{Gradient descent applied to $J(\theta)=\theta^2$. The starting and points are shown by red and green dots, respectively. Code used to generate this plot can be found. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
+\caption{Gradient descent applied to $J(\theta)=\theta^2$. The starting and end points are shown by red and green dots, respectively. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
 \label{graddes-fig:gd2}
 \end{figure}
 
-We should be careful not to make $\alpha$ too small, because gradient descent will take a lot longer to converge. This is demonstrated in Figure \ref{graddes-fig:gd2-slow}.
-We should also be careful not to make $\alpha$ too large, because gradient descent 
-might not converge at all. This demonstrated in Figure \ref{graddes-fig:gd2-overshoot}, where $\theta_0=0.5$ and $\alpha = 1.1$. The first step overshoots the minimum $\theta=0$ and ends up at $\theta=-0.6$, where the gradient is even higher. This keeps on repeating and the steps keeps getting larger and larger. 
+
+% Impact of the learning rate --------------------------
+\subsection{Impact of the learning rate}
+Each step of gradient descent moves $\theta$ by $-\alpha\nabla J(\theta)$. If $\alpha$ is too small, each step will make little progress and gradient descent will take long to converge to the minimum. This is demonstrated in Figure \ref{graddes-fig:gd2-slow}, where everything is the same as Figure \ref{graddes-fig:gd2} except the learning rate is reduced to $\alpha=0.02$. Similarly, if $\alpha$ too large, gradient descent might not converge at all. This is demonstrated in Figure \ref{graddes-fig:gd2-overshoot}, where $\theta_0=0.5$ and $\alpha = 1.1$. The first step overshoots the minimum $\theta=0$ and ends up at $\theta=-0.6$, where the gradient is even higher. This keeps on repeating and the steps keeps getting larger. Earlier we showed that moving in the opposite direction of $\nabla J$ decreases $J$ the fastest. Why, then, does $J$ increase in this example? The reason is that moving from $\theta$ to $\theta-\alpha\nabla J$ is only guaranteed to decrease $J$ if $J(\theta-\alpha\nabla J) \approx J(\theta) - \alpha\nabla J\cdot \nabla J$, for which $\alpha$ needs to be sufficiently small.
 
 \begin{figure}[ht]
     \begin{subfigure}[ht]{\linewidth}
@@ -625,14 +625,16 @@ might not converge at all. This demonstrated in Figure \ref{graddes-fig:gd2-over
     \begin{subfigure}[ht]{\linewidth}
         \centering
         \includegraphics[scale=0.45]{images/grad_des/gd2_overshoot.pdf}
-        \caption{If $\alpha$ is too large, gradient descent will not converge.}
+        \caption{If $\alpha$ is too large, gradient descent might not converge.}
         \label{graddes-fig:gd2-overshoot}
     \end{subfigure}%
     
-    \caption{Impact of the learning rate on convergence. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
+    \caption{Impact of the learning rate on convergence. The cost function used is $J(\theta)=\theta^2$. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
 \end{figure}
 
-In order to make sure gradient descent is not diverging or converging too slowly, we can plot the cost function $J$ after every step. With a sufficiently small value of $\alpha$, $J$ should decrease at every step. If $J$ is decreasing too slowly, we can try increasing $\alpha$. If $J$ is increasing, we can try decreasing $J$. 
+In order to make sure gradient descent is not diverging or converging too slowly, we can plot the cost function $J$ after every step. With a sufficiently small value of $\alpha$, $J$ should decrease at every step. If it is decreasing too slowly, we can try increasing $\alpha$. If it is increasing, we can try decreasing $\alpha$. Figure \ref{graddes-fig:gd2-progress} shows how $J(\theta)=\theta^2$ changes for gradient descent runs in Figures \ref{graddes-fig:gd2}, \ref{graddes-fig:gd2-slow}, and \ref{graddes-fig:gd2-overshoot}. In case of Figure \ref{graddes-fig:gd2}, $J$ converges to the minimum after about 10 iterations. For the run shown in Figure \ref{graddes-fig:gd2-overshoot}, $J$ increases after every step, which means the learning rate is too large.
+
+This way of tracking the progress of gradient descent is easily generalizable when there are many features, i.e. when $J$ is a function of many variables. That's not the case for Figures such as \ref{graddes-fig:gd2}, where we directly visualize $J$.
 
 \begin{figure}[ht]
 \centering
@@ -641,12 +643,15 @@ In order to make sure gradient descent is not diverging or converging too slowly
 \label{graddes-fig:gd2-progress}
 \end{figure}
 
+
+% Local minima and initialization ----------------------
+\subsection{Local minima and initialization}
 Let's now look at a more complicated function:
 \begin{equation}
    J(\theta) = \frac{12}{5} \theta^4 + \frac{4}{5} \theta^3 - \frac{18}{5} \theta^2 + 2.
    \label{graddes-eq:j4}
 \end{equation}
-This function has a global minimum at $\theta=-1$, and a local one at $\theta=+3/4$. Which one will gradient descent converge to? That depends on the starting point. This is demonstrated in Figure \ref{graddes-fig:gd4-init}.
+This function has a global minimum at $\theta=-1$ and a local minimum at $\theta=+3/4$. Which one will gradient descent converge to? That depends on the starting point. This is demonstrated in Figure \ref{graddes-fig:gd4-init}.
 
 \begin{figure}[ht]
     \begin{subfigure}[ht]{\linewidth}
