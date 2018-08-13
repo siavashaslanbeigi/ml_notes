@@ -610,7 +610,7 @@ The ball-rolling analogy breaks down here, since the ball speeds up as it gets t
 
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.7]{images/grad_des/gd2.pdf}
+\includegraphics[scale=0.6]{images/grad_des/gd2.pdf}
 \caption{Gradient descent applied to $J(\theta)=\theta^2$. The starting and end points are shown by red and green dots, respectively. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
 \label{graddes-fig:gd2}
 \end{figure}
@@ -648,7 +648,7 @@ This way of tracking the progress of gradient descent is easily generalizable wh
 
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.7]{images/grad_des/gd2_progress.pdf}
+\includegraphics[scale=0.6]{images/grad_des/gd2_progress.pdf}
 \caption{Tracking the progress of gradient descent applied to  $J(\theta)=\theta^2$. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
 \label{graddes-fig:gd2-progress}
 \end{figure}
@@ -661,40 +661,111 @@ Let's now look at a more complicated function:
    J(\theta) = \frac{12}{5} \theta^4 + \frac{4}{5} \theta^3 - \frac{18}{5} \theta^2 + 2.
    \label{graddes-eq:j4}
 \end{equation}
-This function has a global minimum at $\theta=-1$, a local minimum at $\theta=+3/4$, and a local maximum at $\theta=0$. Will gradient descent always be able to find the global minimum? Unfortunately no; it depends on the starting point. This is demonstrated in Figure \ref{graddes-fig:gd4-init}. For any starting point $\theta_0>0$, gradient descent will converge to the local minimum, while if $\theta_0<0$, it will find the global minimum.
-
-Another interesting feature of \eqref{graddes-eq:j4} is that it has a local maximum at $\theta=0$. If we initialize gradient descent at $\theta=0$, it will not make any progress at all, since $J'(0)=0$. Even if we initialize close to the local maximum, progress will be very slow. This is because $J'(\theta)$ is small there and gradient descent will take small steps. Figure \ref{graddes-fig:gd2-slow} demonstrates this, where the learning rate is kept the same as that in Figure \ref{graddes-fig:gd4-init}, but the starting point is changed to $\theta=-0.01$ and the number of iterations is increased by a factor of 3. Even with so many more steps, gradient descent is not able to converge to the global minimum.
+It has a global minimum at $\theta=-1$, a local minimum at $\theta=+3/4$, and a local maximum at $\theta=0$. Will gradient descent always be able to find the global minimum? Unfortunately, no; it depends on the starting point. This is demonstrated in Figure \ref{graddes-fig:gd4-init}. For any starting point $\theta_0>0$, gradient descent will converge to the local minimum, while if $\theta_0<0$, it will find the global minimum.
 
 \begin{figure}[ht]
-    \begin{subfigure}[ht]{\linewidth}
+    \begin{subfigure}{\linewidth}
         \centering
         \includegraphics[scale=0.45]{images/grad_des/gd4_local.pdf}
         \caption{Converging to the local minimum.}
         \label{graddes-fig:gd4-local}
     \end{subfigure}%
     
-    \begin{subfigure}[ht]{\linewidth}
+    \begin{subfigure}{\linewidth}
         \centering
         \includegraphics[scale=0.45]{images/grad_des/gd4_global.pdf}
         \caption{Converging to the global minimum.}
         \label{graddes-fig:gd4-global}
     \end{subfigure}%
     
-    \begin{subfigure}[ht]{\linewidth}
-        \centering
-        \includegraphics[scale=0.45]{images/grad_des/gd4_slow.pdf}
-        \caption{Gradient descent takes very small steps in regions where the gradient is small.}
-        \label{graddes-fig:gd4-slow}
-    \end{subfigure}%
-    
     \caption{Impact of initialization on convergence. Cost function is given by \eqref{graddes-eq:j4}. Number of gradient descent steps in each case is 30. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
     \label{graddes-fig:gd4-init}
 \end{figure}
 
+Another interesting feature of \eqref{graddes-eq:j4} is that it has a local maximum at $\theta=0$. If we initialize gradient descent at $\theta=0$, it will not make any progress at all, since $J'(0)=0$. Even if we initialize close to the local maximum, progress will be slow, since $J'(\theta)$ is small there. Figure \ref{graddes-fig:gd2-slow} demonstrates this, where the learning rate is kept the same as that in Figure \ref{graddes-fig:gd4-init}, but the starting point is changed to $\theta=-0.01$ and the number of iterations is increased by a factor of 3. Even with so many more steps, gradient descent is not able to converge to the global minimum.
 
 
-% Optimal learning rate --------------------------------
-\subsection{Optimal learning rate}
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.6]{images/grad_des/gd4_slow.pdf}
+\caption{Gradient descent takes very small steps in regions where the gradient is small. Cost function is given by \eqref{graddes-eq:j4}. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
+\label{graddes-fig:gd4-slow}
+\end{figure}
+
+
+% Feature scaling --------------------------------------
+\subsection{Feature scaling}
+So far we've been looking at 1d functions. Let's now look at a 2d example:
+\begin{equation}
+    J(\theta_1, \theta_2)=9(\theta_1 - 2)^2+(\theta_2 - 1)^2.
+    \label{graddes-eq:fs}
+\end{equation}
+Its minimum occurs at
+\begin{equation*}
+   \theta=\begin{pmatrix}\theta_1\\\theta_2\end{pmatrix}=\begin{pmatrix}2\\1\end{pmatrix}, 
+\end{equation*}
+and the gradient is given by
+\begin{equation*}
+    \nabla J = \begin{pmatrix}18(\theta_1-2)\\2(\theta_2-1)\end{pmatrix},
+\end{equation*}
+so the update rule is
+\begin{equation*}
+   \begin{pmatrix}\theta_1\\\theta_2\end{pmatrix} := \begin{pmatrix}\theta_1\\\theta_2\end{pmatrix} - \alpha\begin{pmatrix}18(\theta_1-2)\\2(\theta_2-1)\end{pmatrix}.
+\end{equation*}
+In Figure \ref{graddes-fig:fs-zz}, we've applied gradient descent to \eqref{graddes-eq:fs}, with $\alpha=0.1$ and starting point $\theta_1=\theta_2=5$. It makes large zig-zag moves about $\theta_1=2$ and approaches the minimum slowly along the $\theta_2$ direction. The reason is that the gradient in the $\theta_1$ direction is much larger. This can be seen from the contours; they are elongated vertically. The first step, for instance, goes from $\begin{pmatrix}5\\5\end{pmatrix}$ to $\begin{pmatrix}-0.4\\4.2\end{pmatrix}$, decreasing $\theta_1$ by $5.4$, and $\theta_2$ by only $0.8$.
+
+One way of avoiding the zig-zag moves is to reduce $\alpha$, so that we do not overshoot $\theta_1=2$. This is done in Figure \ref{graddes-fig:fs-zz-fixed}, where $\alpha=0.05$. Gradient descent takes one big step along the $\theta_1$ direction, and many smaller ones along $\theta_2$ towards the minimum. Since we had to decrease $\alpha$ to avoid large moves in the $\theta_1$ direction, steps along $\theta_2$ are now much smaller than they need to be.
+
+
+\begin{figure}[ht]
+    \begin{subfigure}{\linewidth}
+        \centering
+        \includegraphics[scale=0.45]{images/grad_des/fs_zigzag.pdf}
+        \caption{$\alpha=0.1$.}
+        \label{graddes-fig:fs-zz}
+    \end{subfigure}%
+    
+    \begin{subfigure}{\linewidth}
+        \centering
+        \includegraphics[scale=0.45]{images/grad_des/fs_zigzag_fixed.pdf}
+        \caption{$\alpha=0.05$.}
+        \label{graddes-fig:fs-zz-fixed}
+    \end{subfigure}%
+    
+    \caption{Gradient descent applied to \eqref{graddes-eq:fs}. The starting point is $\theta_1=\theta_2=5$ and the first $10$ steps are shown. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/feature_scaling.ipynb}{\color{blue} here}.}
+\end{figure}
+
+The problem we're facing is that $J$ has a much larger gradient along $\theta_1$ than $\theta_2$. Can we get around this somehow? Let
+\begin{equation}
+    \tilde{\theta}_1 = 3(\theta_1-2), \qquad
+    \tilde{\theta}_2 = \theta_2-1,
+    \label{graddes-eq:fs-rescaling}
+\end{equation}
+so that $J=\tilde{\theta}_1^2 + \tilde{\theta}_2^2$. We can now use gradient descent to minimize $J$ w.r.t $\tilde{\theta}_1$ and $\tilde{\theta}_2$, and simply use the rescaling \eqref{graddes-eq:fs-rescaling} to find the minimum w.r.t $\theta$. Since our function is simple enough, let's check this analytically. The minimum of $\tilde{\theta}_1^2 + \tilde{\theta}_2^2$ occurs at $\tilde{\theta}_1=\tilde{\theta}_2=0$, and with the rescaling \eqref{graddes-eq:fs-rescaling} we recover the original minimum: $\theta_1 = \tilde{\theta}_2/3+2=2$, $\theta_2 = \tilde{\theta}_1+1=1$.
+
+The crucial point is that the gradient of $J$ along $\tilde{\theta}_1$ and $\tilde{\theta}_2$ is the same, so gradient descent can now move directly towards the minimum.
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.6]{images/grad_des/fs_scaled.pdf}
+\caption{Gradient descent takes very small steps in regions where the gradient is small. Cost function is given by \eqref{graddes-eq:j4}. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
+\label{graddes-fig:gd4-slow}
+\end{figure}
+
+
+% Gradient descent for linear regression ---------------
+\subsection{Gradient descent for linear regression}
+So far we've been talking about a generic cost function $J$.
+Let's now work out the gradient descent update rule for linear regression specifically. Since we have already computed $\nabla J$ in \eqref{linreg-eq:costfunc-nbala}, it is simply given by:
+\begin{equation}
+    \theta := \theta - \frac{\alpha}{m}X^T(X\theta - Y).
+\end{equation}
+
+
+
+% Line search ------------------------------------------
+\subsection{Line search}
 We've seen so far that picking the learning rate is quite tricky. If it's too large, gradient descent might not converge. If it's too small, convergence might be very slow. Is there a way of automatically picking the optimal learning rate? Let's remember what the learning rate is actually doing. One step of gradient descent moves us in the direction $-\nabla J$ by $\alpha\nabla J$: $\theta \to \theta - \alpha \nabla J(\theta)$. So $\alpha$ determines how long a step we take in the direction $-\nabla J$. How about, then, tuning $\alpha$ to reduce $J$ as much as possible along the direction $-\nabla J$? After all, our goal is to minimize $J$! What exactly would this involve? We can start with one value of $\alpha$, move to $\theta - \alpha \nabla J(\theta)$, and compute the value of the cost function there: $J(\theta - \alpha \nabla J(\theta))$. We can repeat this for all possible values of $\alpha$ and ultimately pick the value that minimizes $J(\theta - \alpha \nabla J(\theta))$. This means we need to minimize the $1$-dimensional function
 \begin{equation}
     f(\alpha) = J(\theta - \alpha \nabla J(\theta))
@@ -731,31 +802,9 @@ Let's look at what this optimal learning does for us in some special cases. Supp
 More generally, if $\nabla J$ is along the direction of an eigenvector of $A$, it will only take one step to get to the minimum. To see why, let $v$ be a normalized eigenvector of $A$ with eigenvalue $\lambda$: $Av=\lambda v$, $v^Tv=1$. If $\nabla J$ points along the direction of $v$, then $\nabla J = ||\nabla J|| v$ and $A(\nabla J)=\lambda ||\nabla J|| v = \lambda \nabla J$. Plugging this back in \eqref{graddes-eq:opt-alpha} we find $\alpha=1/\lambda$. One step of gradient descent would take us from $\theta$ to $\theta^{new} = \theta-\alpha\nabla J=\theta-\frac{1}{\lambda}\nabla J$. The gradient at $\theta^{new}$ is given by $A\theta^{new}+B=A\theta-\frac{1}{\lambda}A\nabla J+B=A\theta-\nabla J+B=0$, which means $\theta^{new}$ is the minimum.
 
 
-% Gradient descent for linear regression ---------------
-\subsection{Gradient descent for linear regression}
-So far we've been talking about a generic cost function $J$.
-Let's now work out the gradient descent update rule for linear regression specifically. Since we have already computed $\nabla J$ in \eqref{linreg-eq:costfunc-nbala}, it is simply given by:
-\begin{equation}
-    \theta := \theta - \frac{\alpha}{m}X^T(X\theta - Y).
-\end{equation}
 
 
-%  In the case of linear regression, we can actually carry out this optimization analytically! Let's go through the math.
 
-% Recall that for linear regression (see \eqref{linreg-eq:multi-costfunc-mat} and \eqref{linreg-eq:costfunc-nbala})
-% \begin{align*}
-%     J(\theta)
-%         &= \frac{1}{2m}(X\theta - Y)^T(X\theta - Y)\\
-%     \nabla J(\theta)
-%         &= \frac{1}{m}X^T(X\theta - Y).
-% \end{align*}
-% We then have
-% \begin{align}
-%     \frac{df}{d\alpha}
-%         &=-\nabla J\cdot \nabla J(\theta - \alpha \nabla J) \\
-%         &= -\frac{1}{m}[X^T(X\theta - Y)]^T\frac{1}{m}X^T(X(\theta - \alpha \nabla J)  - Y)
-
-% \end{align}
 
 
 \clearpage
