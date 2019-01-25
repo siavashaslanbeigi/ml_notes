@@ -1,7 +1,8 @@
 # Derivation of basic machine learning algorithms
 
-These notes are based on Andrew Ng's Machine Learning course on Coursera. The goal is to fill in the mathematical gaps, when needed.
+These notes are based on Andrew Ng's Machine Learning course on Coursera. They expand on the mathematical derivation of the algorithms covered in the lectures.
 
+### Hand-written notes
 * Notebook 1
   1. [Introduction](https://github.com/siavashaslanbeigi/ml_notes/blob/master/docs/hand_written_notes/nb1_intro.pdf)
   2. [Linear Regression With One Variable](https://github.com/siavashaslanbeigi/ml_notes/blob/master/docs/hand_written_notes/nb1_linreg.pdf)
@@ -19,3 +20,6 @@ These notes are based on Andrew Ng's Machine Learning course on Coursera. The go
   2. [K-Means Clustering](https://github.com/siavashaslanbeigi/ml_notes/blob/master/docs/hand_written_notes/nb3_kmeans.pdf)
   3. [Principal Component Analysis](https://github.com/siavashaslanbeigi/ml_notes/blob/master/docs/hand_written_notes/nb3_pca.pdf)
   4. [Anomaly Detection](https://github.com/siavashaslanbeigi/ml_notes/blob/master/docs/hand_written_notes/nb3_anomaly.pdf)
+
+### Typed notes
+One goal of this repo is to type up the hand-written notes ([LaTeX](https://github.com/siavashaslanbeigi/ml_notes/blob/master/docs/main.tex) and [PDF](https://github.com/siavashaslanbeigi/ml_notes/blob/master/docs/typed_notes.pdf)). Every plot is linked to the Jupyter Notebook that produced it, so that all results can be checked from scratch. For instance, here's a notebook on [feature scaling](https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/feature_scaling.ipynb) which produces Figures 16 and 17 in the notes.
