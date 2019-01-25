@@ -348,7 +348,7 @@ With these definitions, we can show that $\theta^Tx^{(i)}$ is the $i$th componen
     \label{linreg-eq:multi-costfunc-mat}
 \end{align}
 
-Why should we care about writing $J$ in matrix (or sometimes called \textit{vectorized}) form? One reason is parallelization: matrix multiplication is a highly parallelizable operation. Consider $C=AB$, where $A$ and $B$ are $1000,000 \times 5$ and $5 \times 1$ dimensional, respectively. All $1000,000$ components of $C$ can be computed in parallel, because they do not depend on one another. Most programming languages have highly optimized libraries for matrix multiplication. In the following Python \href{https://github.com/siavashaslanbeigi/machine_learning/blob/master/lin_reg/matrix.ipynb}{\color{blue} example}, it's shown that a vectorized implementation of \eqref{linreg-eq:multi-costfunc-mat} is more than two orders of magnitude faster than a for-loop implementation of \eqref{linreg-eq:multi-costfunc}. This is not all due to parallelization; overhead of the for-loop itself is probably a major factor. Nevertheless, this demonstrates the importance of vectorized implementations for large data sets.
+Why should we care about writing $J$ in matrix (or sometimes called \textit{vectorized}) form? One reason is parallelization: matrix multiplication is a highly parallelizable operation. Consider $C=AB$, where $A$ and $B$ are $1000000 \times 5$ and $5 \times 1$ dimensional, respectively. All $1000000$ components of $C$ can be computed in parallel, because they do not depend on one another. Most programming languages have highly optimized libraries for matrix multiplication. In the following Python \href{https://github.com/siavashaslanbeigi/machine_learning/blob/master/lin_reg/matrix.ipynb}{\color{blue} example}, it's shown that a vectorized implementation of \eqref{linreg-eq:multi-costfunc-mat} is more than two orders of magnitude faster than a for-loop implementation of \eqref{linreg-eq:multi-costfunc}. This is not all due to parallelization; overhead of the for-loop itself is probably a major factor. Nevertheless, this demonstrates the importance of vectorized implementations for large data sets.
 
 Writing expressions in matrix form also makes it easier to see when results from linear algebra could be relevant. For instance, later in this section we will use the eigenvalues/eigenvectors of $X^TX$ to show that minimization of $J$ does not lead to a unique solution for $\theta$ when $m<n+1$.
 
@@ -578,10 +578,10 @@ Figure \ref{linreg-fig:yerror} shows an example of using \eqref{linreg-eq:costfu
 % Gradient Descent =====================================
 \newpage
 \section{Gradient Descent}
-We saw in the previous section that training linear regression involves minimizing a cost function $J(\theta_1,\dots,\theta_N)$. We were able to carry out the minimization analytically and arrive at the normal equation. That is only possible because the hypothesis function $h_{\theta}(x)$ is linear in the fitting parameters $\theta_1,\dots,\theta_N$, which is not the case for most other learning algorithms.
-Even for linear regression, as we explained in section \ref{section:normal-eq-infeasible}, the normal equation becomes infeasible when there are a large number of features. Therefore, we need an algorithm for minimizing a generic cost function $J(\theta_1,\dots,\theta_N)$. Gradient descent is one such algorithm. To make the notation simpler, we will use $\theta$ to denote the vectors of parameters $\theta_1,\dots,\theta_N$ and simply write the cost function as $J(\theta)$.
+We saw in the previous section that training linear regression involves minimizing a cost function $J(\theta_1,\dots,\theta_N)$. We were able to carry out the minimization analytically and arrived at the normal equation. That is only possible because the hypothesis function $h_{\theta}(x)$ is linear in the fitting parameters $\theta_1,\dots,\theta_N$, which is not the case for most other learning algorithms.
+Even for linear regression, as we explained in section \ref{section:normal-eq-infeasible}, the normal equation becomes infeasible when there are a large number of features. Therefore, we need an algorithm for minimizing a generic cost function $J(\theta_1,\dots,\theta_N)$. \textit{Gradient descent} is one such algorithm. To make the notation simpler, we will use $\theta$ to denote the vectors of parameters $\theta_1,\dots,\theta_N$ and simply write the cost function as $J(\theta)$.
 
-The general idea of gradient descent is to start at some value of $\theta$, then keep changing $\theta$ to reduce $J$ until we hopefully end up at the minimum. How do we change $\theta$? One way is to look for the direction along which $J$ decreases the fastest locally, and take a small step in that direction. This makes sense, since our goal is to minimize $J$ and we want to arrive at the minimum as quickly as possible. What \textit{is} the direction in which $J$ decreases the fastest? The answer turns out to be the opposite direction of the gradient $\nabla J$. To see why this makes sense, consider the Taylor expansion of $J$ about $\theta$:
+The general idea of gradient descent is to start at some value of $\theta$, and then keep changing $\theta$ to reduce $J$ as much as possible, until we hopefully end up at the minimum. How do we change $\theta$? One way is to look for the direction along which $J$ decreases the fastest locally, and take a small step in that direction. This makes sense, since our goal is to minimize $J$ and we want to arrive at the minimum as quickly as possible. What \textit{is} the direction along which $J$ decreases the fastest? The answer turns out to be the opposite direction of the gradient $\nabla J$. To see why this makes sense, consider the Taylor expansion of $J$ about $\theta$:
 \begin{equation}
     J(\theta + \delta\theta) =  J(\theta) + \nabla J \cdot \delta\theta + \cdots.
 \end{equation}
@@ -589,9 +589,9 @@ If we make a small move in the opposite direction of the gradient, i.e. $\delta\
 \begin{equation}
    \Delta J = J(\theta + \delta\theta) -  J(\theta) \approx -\epsilon \nabla J \cdot \nabla J < 0.
 \end{equation}
-This doesn't quite prove that $J$ decreases the \textit{fastest} in this direction. To see why that is, note that first-order changes in $J$ are given by the inner product of the vectors $\nabla J$ and $\delta \theta$: $\Delta J \approx \nabla J \cdot \delta\theta$. If we constrain the magnitude of $\delta \theta$, its inner product with $\nabla J$ is most negative when it is pointing in the opposite direction of $\nabla J$. A formal proof of this result is presented in Appendix \ref{app-section:gd}.
+This doesn't quite prove that $J$ decreases the \textit{fastest} in this direction. To see why that is, note that the first-order change in $J$ is given by the inner product of the vectors $\nabla J$ and $\delta \theta$: $\Delta J \approx \nabla J \cdot \delta\theta$. If we constrain the magnitude of $\delta \theta$, its inner product with $\nabla J$ is most negative when it is pointing in the opposite direction. A formal proof of this result is presented in Appendix \ref{app-section:gd}.
 
-One step of gradient descent then involves updating $\theta$ as follows:
+One step of gradient descent moves us along the direction of steepest descent as follows
 \begin{equation}
     \theta := \theta - \alpha \nabla J,
 \end{equation}
@@ -602,7 +602,7 @@ where $\alpha > 0$ is called the \textit{learning rate} and determines how long 
     \item $\theta^{(2)}=\theta^{(1)}-\alpha\nabla J(\theta^{(1)})$.
     \item $\dots$
 \end{enumerate}
-Figure \ref{graddes-fig:gd2} demonstrates this using a simple cost function: $J(\theta)=\theta^2$. With an appropriate learning rate ($\alpha=0.1$) and starting point ($\theta_0=2$), gradient descent is able to find the minimum after about $20$ steps. It's a bit like rolling a ball down a valley; gravity will work its magic and the ball will eventually settle at the bottom. Note that even though the learning rate is constant, the steps keep getting smaller. The reason is that the closer to the minimum we get, the smaller the gradient becomes: from $\theta = 2$ we would take a step of size $-\lambda J'(2) = -0.4$, while from $\theta = 0.5$ the step size would only be $-0.1$.
+Figure \ref{graddes-fig:gd2} demonstrates this using a simple cost function: $J(\theta)=\theta^2$. With an appropriate learning rate $\alpha=0.1$ and starting point $\theta^{(0)}=2$, gradient descent is able to find the minimum after about $20$ steps. It's a bit like rolling a ball down a valley; gravity will work its magic and the ball will eventually settle at the bottom. Note that even though the learning rate is constant, the steps keep getting smaller. The reason is that the closer to the minimum we get, the smaller the gradient becomes: at $\theta = 2$ we would take a step of size $-\alpha J'(2) = -0.4$, while at $\theta = 0.5$ the step size would only be $-0.1$.
 \footnote{
 The ball-rolling analogy breaks down here, since the ball speeds up as it gets to the bottom. In fact, the ball will oscillate about the minimum until it comes to a stop due to friction.
 }
@@ -618,9 +618,9 @@ The ball-rolling analogy breaks down here, since the ball speeds up as it gets t
 
 % Impact of the learning rate --------------------------
 \subsection{Impact of the learning rate}
-Each step of gradient descent moves $\theta$ by $-\alpha\nabla J(\theta)$. If $\alpha$ is too small, each step will make little progress and gradient descent will take a long time to converge to the minimum. This is demonstrated in Figure \ref{graddes-fig:gd2-slow}, where everything is the same as Figure \ref{graddes-fig:gd2}, except the learning rate is reduced to $\alpha=0.02$.
+Each step of gradient descent moves $\theta$ by $-\alpha\nabla J(\theta)$. If $\alpha$ is too small, each step will make little progress and gradient descent will take a long time to converge to the minimum. This is demonstrated in Figure \ref{graddes-fig:gd2-slow}, where the learning rate has been reduced $\alpha=0.02$.
 
-On the other hand, if $\alpha$ is too large, gradient descent might not converge at all. This is demonstrated in Figure \ref{graddes-fig:gd2-overshoot}, where $\theta_0=0.5$ and $\alpha = 1.1$. The first step overshoots the minimum $\theta=0$ and ends up at $\theta=-0.6$, where the gradient is even higher. This keeps on repeating and the steps keeps getting larger. Earlier we showed that moving in the opposite direction of $\nabla J$ should decrease $J$. Why, then, does $J$ increase in this example? The reason is that moving from $\theta$ to $\theta-\alpha\nabla J$ is only guaranteed to decrease $J$ if $J(\theta-\alpha\nabla J) \approx J(\theta) - \alpha\nabla J\cdot \nabla J$, for which $\alpha$ needs to be sufficiently small.
+On the other hand, if $\alpha$ is too large, gradient descent might not converge at all. This is demonstrated in Figure \ref{graddes-fig:gd2-overshoot}, where $\theta^{(0)}=0.5$ and $\alpha = 1.1$. The first step overshoots the minimum and ends up at $\theta=-0.6$, where the gradient is even higher. This keeps on repeating and the steps keep getting larger. Earlier we showed that moving in the opposite direction of $\nabla J$ should decrease $J$. Why, then, does $J$ increase in this example? The reason is that moving from $\theta$ to $\theta-\alpha\nabla J$ is only guaranteed to decrease $J$ if $J(\theta-\alpha\nabla J) \approx J(\theta) - \alpha\nabla J\cdot \nabla J$, for which $\alpha$ needs to be sufficiently small.
 
 \begin{figure}[ht]
     \begin{subfigure}[ht]{\linewidth}
@@ -640,11 +640,11 @@ On the other hand, if $\alpha$ is too large, gradient descent might not converge
     \caption{Impact of the learning rate on convergence. The cost function used is $J(\theta)=\theta^2$. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
 \end{figure}
 
-It is hard to guess just the right learning rate \textit{a priori}. In general, a good way of checking if gradient descent is working is by plotting $J$ after every step.
+It is hard to guess the appropriate learning rate \textit{a priori}. In general, a good way of checking if gradient descent is working is by plotting $J$ after every step.
 With a sufficiently small value of $\alpha$, $J$ should decrease at every step. If it is increasing, we can try decreasing $\alpha$. If it is decreasing too slowly, we can try increasing $\alpha$.
 Figure \ref{graddes-fig:gd2-progress} shows how $J(\theta)=\theta^2$ changes for gradient descent runs in Figures \ref{graddes-fig:gd2}, \ref{graddes-fig:gd2-slow}, and \ref{graddes-fig:gd2-overshoot}. In case of Figure \ref{graddes-fig:gd2}, $J$ converges to the minimum after about 10 iterations. For the run shown in Figure \ref{graddes-fig:gd2-overshoot}, $J$ increases after every step, which means the learning rate is too large.
 
-This way of tracking the progress of gradient descent is easily generalizable when there are many features, i.e. when $J$ is a function of many variables. That's not the case for Figures such as \ref{graddes-fig:gd2}, where we directly plot $J$.
+This way of tracking the progress of gradient descent is easily generalizable when there are many features, i.e. when $J$ is a function of many variables. That's not the case for Figures such as \ref{graddes-fig:gd2}, where we plot $J$ as a function of $\theta$.
 
 \begin{figure}[ht]
 \centering
@@ -661,7 +661,7 @@ Let's now look at a more complicated function:
    J(\theta) = \frac{12}{5} \theta^4 + \frac{4}{5} \theta^3 - \frac{18}{5} \theta^2 + 2.
    \label{graddes-eq:j4}
 \end{equation}
-It has a global minimum at $\theta=-1$, a local minimum at $\theta=+3/4$, and a local maximum at $\theta=0$. Will gradient descent always be able to find the global minimum? Unfortunately, no; it depends on the starting point. This is demonstrated in Figure \ref{graddes-fig:gd4-init}. For any starting point $\theta_0>0$, gradient descent will converge to the local minimum, while if $\theta_0<0$, it will find the global minimum.
+It has a global minimum at $\theta=-1$, a local minimum at $\theta=+3/4$, and a local maximum at $\theta=0$. Will gradient descent always be able to find the global minimum? Unfortunately, no. It depends on the starting point. This is demonstrated in Figure \ref{graddes-fig:gd4-init}. For any starting point $\theta^{(0)}>0$, gradient descent will converge to the local minimum, while if $\theta^{(0)}<0$, it will find the global minimum.
 
 \begin{figure}[ht]
     \begin{subfigure}{\linewidth}
@@ -682,7 +682,7 @@ It has a global minimum at $\theta=-1$, a local minimum at $\theta=+3/4$, and a 
     \label{graddes-fig:gd4-init}
 \end{figure}
 
-Another interesting feature of \eqref{graddes-eq:j4} is that it has a local maximum at $\theta=0$. If we initialize gradient descent at $\theta=0$, it will not make any progress at all, since $J'(0)=0$. Even if we initialize close to the local maximum, progress will be slow, since $J'(\theta)$ is small there. Figure \ref{graddes-fig:gd2-slow} demonstrates this, where the learning rate is kept the same as that in Figure \ref{graddes-fig:gd4-init}, but the starting point is changed to $\theta=-0.01$ and the number of iterations is increased by a factor of 3. Even with so many more steps, gradient descent is not able to converge to the global minimum.
+Another interesting feature of \eqref{graddes-eq:j4} is that it has a local maximum at $\theta=0$. If we initialize gradient descent at $\theta=0$, it will not make any progress at all, since $J'(0)=0$. Even if we initialize close to the local maximum, progress will be slow, since $J'(\theta)$ is small there. Figure \ref{graddes-fig:gd4-slow} demonstrates this, where the learning rate is kept the same as that in Figure \ref{graddes-fig:gd4-init}, but the starting point is changed to $\theta=-0.01$ and the number of iterations is increased by a factor of 3. Even with so many more steps, gradient descent is not able to converge to the global minimum.
 
 
 \begin{figure}[ht]
@@ -702,19 +702,19 @@ So far we've been looking at 1d functions. Let's now look at a 2d example:
 \end{equation}
 Its minimum occurs at
 \begin{equation*}
-   \theta=\begin{pmatrix}\theta_1\\\theta_2\end{pmatrix}=\begin{pmatrix}2\\1\end{pmatrix}, 
+   \theta=\begin{pmatrix}\theta_1\\\theta_2\end{pmatrix}=\begin{pmatrix}2\\1\end{pmatrix},
 \end{equation*}
-and the gradient is given by
+and its gradient is given by
 \begin{equation*}
     \nabla J = \begin{pmatrix}18(\theta_1-2)\\2(\theta_2-1)\end{pmatrix},
 \end{equation*}
-so the update rule is
+so the gradient descent update rule is
 \begin{equation*}
    \begin{pmatrix}\theta_1\\\theta_2\end{pmatrix} := \begin{pmatrix}\theta_1\\\theta_2\end{pmatrix} - \alpha\begin{pmatrix}18(\theta_1-2)\\2(\theta_2-1)\end{pmatrix}.
 \end{equation*}
-In Figure \ref{graddes-fig:fs-zz}, we've applied gradient descent to \eqref{graddes-eq:fs}, with $\alpha=0.1$ and starting point $\theta_1=\theta_2=5$. It makes large zig-zag moves about $\theta_1=2$ and approaches the minimum slowly along the $\theta_2$ direction. The reason is that the gradient in the $\theta_1$ direction is much larger. This can be seen from the contours; they are elongated vertically. The first step, for instance, goes from $\begin{pmatrix}5\\5\end{pmatrix}$ to $\begin{pmatrix}-0.4\\4.2\end{pmatrix}$, decreasing $\theta_1$ by $5.4$, and $\theta_2$ by only $0.8$.
+In Figure \ref{graddes-fig:fs-zz}, we've applied gradient descent to \eqref{graddes-eq:fs}, with $\alpha=0.1$ and starting point $\theta_1=\theta_2=5$. It makes large zig-zag moves about $\theta_1=2$ and approaches the minimum slowly along the $\theta_2$ direction. The reason is that the gradient in the $\theta_1$ direction is much larger. This can be seen from the contours of $J$; they are elongated vertically. The first step, for instance, goes from $\begin{pmatrix}5\\5\end{pmatrix}$ to $\begin{pmatrix}-0.4\\4.2\end{pmatrix}$, decreasing $\theta_1$ by $5.4$ and $\theta_2$ by only $0.8$.
 
-One way of avoiding the zig-zag moves is to reduce $\alpha$, so that we do not overshoot $\theta_1=2$. This is done in Figure \ref{graddes-fig:fs-zz-fixed}, where $\alpha=0.05$. Gradient descent takes one big step along the $\theta_1$ direction, and many smaller ones along $\theta_2$ towards the minimum. Since we had to decrease $\alpha$ to avoid large moves in the $\theta_1$ direction, steps along $\theta_2$ are now much smaller than they need to be.
+One way to avoid the zig-zag moves is to reduce $\alpha$, so that we do not overshoot $\theta_1=2$. This is done in Figure \ref{graddes-fig:fs-zz-fixed}, where $\alpha=0.05$. Gradient descent takes one big step along the $\theta_1$ direction, and many smaller ones along $\theta_2$ towards the minimum. Since we decreased $\alpha$ to avoid large moves in the $\theta_1$ direction, steps along $\theta_2$ are now much smaller than they need to be.
 
 
 \begin{figure}[ht]
@@ -733,35 +733,80 @@ One way of avoiding the zig-zag moves is to reduce $\alpha$, so that we do not o
     \end{subfigure}%
     
     \caption{Gradient descent applied to \eqref{graddes-eq:fs}. The starting point is $\theta_1=\theta_2=5$ and the first $10$ steps are shown. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/feature_scaling.ipynb}{\color{blue} here}.}
+    \label{graddes-fig:fs-issues}
 \end{figure}
 
-The problem we're facing is that $J$ has a much larger gradient along $\theta_1$ than $\theta_2$. Can we get around this somehow? Let
+The problem we're facing is that $J$ has a much larger gradient along $\theta_1$ than $\theta_2$. As it turns out, we can get around this issue by a simple redefinition:
 \begin{equation}
     \tilde{\theta}_1 = 3(\theta_1-2), \qquad
     \tilde{\theta}_2 = \theta_2-1,
     \label{graddes-eq:fs-rescaling}
 \end{equation}
-so that $J=\tilde{\theta}_1^2 + \tilde{\theta}_2^2$. We can now use gradient descent to minimize $J$ w.r.t $\tilde{\theta}_1$ and $\tilde{\theta}_2$, and simply use the rescaling \eqref{graddes-eq:fs-rescaling} to find the minimum w.r.t $\theta$. Since our function is simple enough, let's check this analytically. The minimum of $\tilde{\theta}_1^2 + \tilde{\theta}_2^2$ occurs at $\tilde{\theta}_1=\tilde{\theta}_2=0$, and with the rescaling \eqref{graddes-eq:fs-rescaling} we recover the original minimum: $\theta_1 = \tilde{\theta}_2/3+2=2$, $\theta_2 = \tilde{\theta}_1+1=1$.
-
-The crucial point is that the gradient of $J$ along $\tilde{\theta}_1$ and $\tilde{\theta}_2$ is the same, so gradient descent can now move directly towards the minimum.
+so that $J=\tilde{\theta}_1^2 + \tilde{\theta}_2^2$. We can now use gradient descent to minimize $J$ w.r.t $\tilde{\theta}_1$ and $\tilde{\theta}_2$, and then simply use \eqref{graddes-eq:fs-rescaling} to find the minimum w.r.t $\theta$.
+\footnote{
+Since $J$ is simple enough, we can check this analytically. The minimum of $\tilde{\theta}_1^2 + \tilde{\theta}_2^2$ occurs at $\tilde{\theta}_1=\tilde{\theta}_2=0$, and with the rescaling \eqref{graddes-eq:fs-rescaling}, we recover the original minimum: $\theta_1 = \tilde{\theta}_2/3+2=2$, $\theta_2 = \tilde{\theta}_1+1=1$.
+}
+The crucial point is that the gradient of $J$ along $\tilde{\theta}_1$ and $\tilde{\theta}_2$ is the same, so gradient descent can now move directly towards the minimum. This is demonstrated in Figure \ref{graddes-fig:fs-scaled}. Contours of $J$ w.r.t $\tilde{\theta}_1$ and $\tilde{\theta}_2$ are circular, and we can now use a larger learning rate ($\alpha=0.2$) to get much closer to the minimum after the same number of steps.
 
 
 \begin{figure}[ht]
 \centering
 \includegraphics[scale=0.6]{images/grad_des/fs_scaled.pdf}
-\caption{Gradient descent takes very small steps in regions where the gradient is small. Cost function is given by \eqref{graddes-eq:j4}. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/basics.ipynb}{\color{blue} here}.}
-\label{graddes-fig:gd4-slow}
+\caption{Gradient descent applied to $\theta_1^2+\theta_2^2$, with $\alpha=0.2$ and starting point $\theta_1=\theta_2=5$. The first $10$ steps are shown. Code used to generate this plot can be found \href{https://github.com/siavashaslanbeigi/ml_notes/blob/master/src/grad_des/feature_scaling.ipynb}{\color{blue} here}.}
+\label{graddes-fig:fs-scaled}
 \end{figure}
 
+Let's consider the implications of what we have just seen for linear regression. Suppose we are considering two features for predicting house prices: size of house $x_1$ ($\text{ft}^2)$ and number of bedrooms $x_2$. The hypothesis function $h$ and cost function $J$ are given as usual:
+\begin{equation}
+    h_{\theta}(x)=\theta_0+\theta_1x_1+\theta_2x_2, \qquad
+    J=\frac{1}{2m}\sum_{i=1}^{m}(\theta_0+\theta_1x^{(i)}_1+\theta_2x^{(i)}_2-y^{(i)})^2.
+\end{equation}
+A reasonable range of values for these features is $x_1\sim 100-1000$ and $x_2\sim 1-10$. Because $x_1$ is much larger than $x_2$, $J$ changes a lot more quickly along $\theta_1$ than $\theta_2$. We just saw that running gradient descent on functions like this is terribly inefficient, because it will spend most of the time zig-zagging in the $\theta_1$ direction. Again, we can get around this problem by a redefinition
+\begin{equation}
+    \tilde{x}_1 = \frac{x_1 - \mu_1}{\sigma_1}, \qquad
+    \tilde{x}_2 = \frac{x_2 - \mu_2}{\sigma_2}
+    \label{graddes-eq:fs-linreg}
+\end{equation}
+where
+\begin{equation}
+    \mu_j = \frac{1}{m}\sum_{i=1}^{m}x^{(i)}_j, \qquad
+    \sigma_j = \frac{1}{m}\sum_{i=1}^{m}(x^{(i)}_j-\mu_j)^2.
+\end{equation}
+We are subtracting the mean $\mu_j$ of every feature $x_j$ in the training set and scaling it by the standard deviation $\sigma_j$. As a result, the new features $\tilde{x}_1$ and $\tilde{x}_2$ take on values in a similar range (in most cases somewhere between $-3$ and $3$). This procedure is called \textit{feature scaling}. There are other ways of transforming the original features so they take on similar values. For instance, instead of dividing $x_j - \mu_j$ by the standard deviation $\sigma_j$, we could divide by the range of $x_j$, i.e. $r_j=\text{max}(x_j)-\text{min}(x_j)$.
+
+We can now run linear regression on the normalized features. Concretely, we will consider the hypothesis function
+\begin{equation}
+    h=\tilde{\theta}_0+\tilde{\theta}_1\tilde{x}_1+\tilde{\theta}_2\tilde{x}_2,
+    \label{graddes-eq:fs-linreg-hyp}
+\end{equation}
+and minimize the following cost function for $\tilde{\theta}_0, \tilde{\theta}_1$, and $\tilde{\theta}_2$:
+\begin{equation}
+    J=\frac{1}{2m}\sum_{i=1}^{m}(\tilde{\theta}_0+\tilde{\theta}_1\tilde{x}^{(i)}_1+\tilde{\theta}^{(i)}_2\tilde{x}^{(i)}_2-y^{(i)})^2.
+\end{equation}
+Gradient descent we will not zig-zag along $\tilde{\theta}_1$, since $\frac{\partial J}{\partial\tilde{\theta}_1}$ is not much larger than $\frac{\partial J}{\partial\tilde{\theta}_2}$. (Contours of $J$ w.r.t $\tilde{\theta}_1$ and $\tilde{\theta}_1$ should be more or less circular.)
+
+After finding the optimal parameters $\tilde{\theta}$ using gradient descent, we can predict the price of an unseen house $x$ by following two steps: (i) transform $x$ to $\tilde{x}$ via \eqref{graddes-eq:fs-linreg}, (ii) plug $\tilde{x}$ in \eqref{graddes-eq:fs-linreg-hyp} to predict the house price. In other words:
+\begin{equation}
+    h(x)=\tilde{\theta}_0+\tilde{\theta}_1\frac{x_1 - \mu_1}{\sigma_1}+\tilde{\theta}_2\frac{x_2 - \mu_2}{\sigma_2}.
+\end{equation}
+Had we optimized using the original features $x$, we would find that
+\begin{equation*}
+    \theta_0 =\tilde{\theta}_0-\frac{\mu_1}{\sigma_1}\tilde{\theta}_1-\frac{\mu_2}{\sigma_2}\tilde{\theta}_2, \qquad
+    \theta_1 = \frac{\tilde{\theta}_1}{\sigma_1}, \qquad
+    \theta_2 = \frac{\tilde{\theta}_2}{\sigma_2}.
+\end{equation*}
+It is important to include the bias term when using feature scaling. Try the following experiment: ignore $\theta_0$ and $\tilde{\theta}_0$ in the analysis above, run linear regression once on the original features to find the optimal $\theta$, and once on the normalized features to find $\tilde{\theta}$. Then consider a new house $x$ and predict its price once using $\theta_1x_2+\theta_2x_2$, and another time using $\tilde{\theta}_1(x_1 - \mu_1)/\sigma_1+\tilde{\theta}_2(x_2 - \mu_2)/\sigma_2$. You will find that the answers are different. Can you see what went wrong?
 
 % Gradient descent for linear regression ---------------
 \subsection{Gradient descent for linear regression}
-So far we've been talking about a generic cost function $J$.
-Let's now work out the gradient descent update rule for linear regression specifically. Since we have already computed $\nabla J$ in \eqref{linreg-eq:costfunc-nbala}, it is simply given by:
+The gradient descent update rule for linear regression is given by (see \eqref{linreg-eq:costfunc-nbala})
 \begin{equation}
-    \theta := \theta - \frac{\alpha}{m}X^T(X\theta - Y).
+    \theta := \theta - \frac{\alpha}{m}X^T(X\theta - Y),
 \end{equation}
-
+or equivalently (see \eqref{linreg-eq:costfunc-mat})
+\begin{equation}
+    \theta := \theta - \frac{\alpha}{m}\sum_{i=1}^{m}(\theta^Tx^{(i)} - y^{(i)})x^{(i)}.
+\end{equation}
 
 
 % Line search ------------------------------------------
@@ -1064,9 +1109,9 @@ The second equality uses the definitions of $W$, $V$, $D$, and the fact that $D_
 
 
 % Gradient Descent =====================================
-\section{Gradient Descent}
+\section{Direction of steepest descent}
 \label{app-section:gd}
-Here we present a formal proof that the cost function $J$ decreases (locally) the fastest in the opposite direction of the gradient $\nabla J$. Consider a vector $n$ and its corresponding unit vector $\hat{n}=n/\sqrt{n\cdot n}$. The rate of change of $J$ at point $\theta$ along $\hat{n}$ is
+Here we present a formal proof that $J(\theta)$ decreases the fastest (locally) in the opposite direction of the gradient $\nabla J$. Consider a vector $n$ and its corresponding unit vector $\hat{n}=n/\sqrt{n\cdot n}$. The rate of change of $J$ at point $\theta$ along $\hat{n}$ is
 \begin{equation*}
     \sum_{j=1}^N\hat{n}_j\frac{\partial J}{\partial\theta_j} = n \cdot \nabla J.
 \end{equation*}
